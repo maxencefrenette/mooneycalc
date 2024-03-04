@@ -4,7 +4,7 @@ interface GameData {
   actionDetailMap: Record<string, ActionDetail>;
 }
 
-interface ActionDetail {
+export interface ActionDetail {
   hrid: string;
   function: string;
   type: string;
