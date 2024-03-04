@@ -22,8 +22,8 @@ export interface ActionDetail {
   dropTable: unknown;
   rareDropTable: unknown;
   upgradeItemHrid: string;
-  inputItem: ItemCount[];
-  outputItem: ItemCount[];
+  inputItems: ItemCount[];
+  outputItems: ItemCount[];
   monsterSpawnInfo: unknown;
   sortIndex: number;
 }
