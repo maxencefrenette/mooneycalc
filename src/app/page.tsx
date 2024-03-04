@@ -2,7 +2,7 @@
 
 import { type ComputedAction, getActions } from "~/services/actions";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
-import { DataTable } from "~/components/data-table";
+import { DataTable } from "~/components/ui/data-table";
 import { PlayerStatsForm } from "~/components/player-stats-form";
 import { initialPlayerStats, type PlayerStats } from "~/services/player-stats";
 import { useState } from "react";
