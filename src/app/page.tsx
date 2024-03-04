@@ -20,7 +20,9 @@ export default function HomePage() {
         return (
           <>
             {actionDetails.inputItems?.map((input) => (
-              <div key={input.itemHrid}>{input.itemHrid}</div>
+              <div key={input.itemHrid}>
+                {input.count} x {input.itemHrid}
+              </div>
             ))}
           </>
         );
@@ -34,7 +36,9 @@ export default function HomePage() {
         return (
           <>
             {actionDetails.outputItems?.map((output) => (
-              <div key={output.itemHrid}>{output.itemHrid}</div>
+              <div key={output.itemHrid}>
+                {output.count} x {output.itemHrid}
+              </div>
             ))}
           </>
         );
