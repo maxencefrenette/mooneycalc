@@ -3,10 +3,10 @@ import { type ComputedAction, getActions } from "~/services/actions";
 import { DataTable } from "~/components/ui/data-table";
 import { PlayerStatsForm } from "~/components/player-stats-form";
 import { initialPlayerStats, type PlayerStats } from "~/services/player-stats";
-import { useState } from "react";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "./ui/data-table-column-header";
 import { type Market } from "~/services/market";
+import { useLocalStorage } from "@uidotdev/usehooks";
 
 const columnHelper = createColumnHelper<ComputedAction>();
 
@@ -76,8 +76,10 @@ export interface CalculationPageProps {
 }
 
 export function CalculationPage({ market }: CalculationPageProps) {
-  const [playerStats, updatePlayerStats] =
-    useState<PlayerStats>(initialPlayerStats);
+  const [playerStats, updatePlayerStats] = useLocalStorage<PlayerStats>(
+    "player_stats",
+    initialPlayerStats,
+  );
 
   const actions = getActions(playerStats, market);
 
