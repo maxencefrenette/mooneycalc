@@ -15,8 +15,10 @@ export default function HomePage() {
   const actions = getActions();
 
   return (
-    <main>
-      <DataTable columns={columns} data={actions} />
+    <main className="flex min-h-screen">
+      <div className="container py-12">
+        <DataTable columns={columns} data={actions} />
+      </div>
     </main>
   );
 }
