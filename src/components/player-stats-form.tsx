@@ -1,7 +1,6 @@
 import { type PlayerStats } from "~/services/player-stats";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { gameData } from "~/services/data";
 import { sortedSkills } from "~/services/skills";
 
 export interface PlayerStatsFormProps {
