@@ -1,16 +1,15 @@
 "use client";
 
-import { getActions } from "~/services/actions";
+import { type ComputedAction, getActions } from "~/services/actions";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { DataTable } from "~/components/data-table";
 import { PlayerStatsForm } from "~/components/player-stats-form";
 import { initialPlayerStats, type PlayerStats } from "~/services/player-stats";
-import { type ActionDetail } from "~/services/data";
 import { useState } from "react";
 
-const columnHelper = createColumnHelper<ActionDetail>();
+const columnHelper = createColumnHelper<ComputedAction>();
 
-const columns: ColumnDef<ActionDetail>[] = [
+const columns: ColumnDef<ComputedAction>[] = [
   {
     accessorKey: "name",
     header: "Name",
@@ -19,10 +18,10 @@ const columns: ColumnDef<ActionDetail>[] = [
     id: "inputs",
     header: "Inputs",
     cell: ({ row }) => {
-      const actionDetails = row.original;
+      const action = row.original;
       return (
         <>
-          {actionDetails.inputItems?.map((input) => (
+          {action.inputs.map((input) => (
             <div key={input.itemHrid}>
               {input.count} x {input.itemHrid}
             </div>
@@ -35,10 +34,10 @@ const columns: ColumnDef<ActionDetail>[] = [
     id: "outputs",
     header: "Outputs",
     cell: ({ row }) => {
-      const actionDetails = row.original;
+      const action = row.original;
       return (
         <>
-          {actionDetails.outputItems?.map((output) => (
+          {action.outputs.map((output) => (
             <div key={output.itemHrid}>
               {output.count} x {output.itemHrid}
             </div>

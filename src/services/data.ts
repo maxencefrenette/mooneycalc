@@ -1,8 +1,15 @@
 import rawGameData from "~/data/init_client_info.json";
 
 interface GameData {
-  actionDetailMap: Record<string, ActionDetail>;
   skillDetailMap: Record<string, SkillDetail>;
+  actionDetailMap: Record<string, ActionDetail>;
+  actionTypeDetailMap: Record<string, ActionTypeDetail>;
+}
+
+export interface SkillDetail {
+  hrid: string;
+  name: string;
+  sortIndex: number;
 }
 
 export interface ActionDetail {
@@ -23,18 +30,18 @@ export interface ActionDetail {
   dropTable: unknown;
   rareDropTable: unknown;
   upgradeItemHrid: string;
-  inputItems: ItemCount[];
-  outputItems: ItemCount[];
+  inputItems: ItemCount[] | null;
+  outputItems: ItemCount[] | null;
   monsterSpawnInfo: unknown;
   sortIndex: number;
 }
 
-interface ItemCount {
+export interface ItemCount {
   itemHrid: string;
   count: number;
 }
 
-interface SkillDetail {
+export interface ActionTypeDetail {
   hrid: string;
   name: string;
   sortIndex: number;

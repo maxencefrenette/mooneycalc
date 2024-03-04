@@ -1,3 +1,5 @@
+"use client";
+
 import { type PlayerStats } from "~/services/player-stats";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
