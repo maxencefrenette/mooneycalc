@@ -1,8 +1,12 @@
 "use client";
 
-import { type ActionDetail, getActions } from "~/services/actions";
+import { getActions } from "~/services/actions";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { DataTable } from "~/components/data-table";
+import { PlayerStatsForm } from "~/components/player-stats-form";
+import { initialPlayerStats, type PlayerStats } from "~/services/player-stats";
+import { type ActionDetail } from "~/services/data";
+import { useState } from "react";
 
 const columnHelper = createColumnHelper<ActionDetail>();
 
@@ -47,10 +51,16 @@ const columns: ColumnDef<ActionDetail>[] = [
 
 export default function HomePage() {
   const actions = getActions();
+  const [playerStat, updatePlayerStats] =
+    useState<PlayerStats>(initialPlayerStats);
 
   return (
     <main className="flex min-h-screen">
-      <div className="container py-12">
+      <div className="container flex flex-col gap-12 py-12">
+        <PlayerStatsForm
+          playerStats={playerStat}
+          updatePlayerStats={updatePlayerStats}
+        />
         <DataTable columns={columns} data={actions} />
       </div>
     </main>
