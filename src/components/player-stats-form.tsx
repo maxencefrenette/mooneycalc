@@ -3,7 +3,7 @@
 import { type PlayerStats } from "~/services/player-stats";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { sortedSkills } from "~/services/skills";
+import { skills } from "~/services/skills";
 
 export interface PlayerStatsFormProps {
   playerStats: PlayerStats;
@@ -18,7 +18,7 @@ export function PlayerStatsForm({
     <div>
       <h1 className="pb-4 text-xl">Player Stats</h1>
       <div className="flex flex-wrap gap-4">
-        {sortedSkills.map(({ hrid, name }) => {
+        {skills.map(({ hrid, name }) => {
           const level = playerStats.levels[hrid]!;
 
           return (
