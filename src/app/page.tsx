@@ -46,18 +46,24 @@ const columns: ColumnDef<ComputedAction>[] = [
       );
     },
   }),
+  {
+    accessorKey: "actionsPerHour",
+    header: "Actions/h",
+    cell: ({ row }) => row.original.actionsPerHour.toFixed(0),
+  },
 ];
 
 export default function HomePage() {
-  const actions = getActions();
-  const [playerStat, updatePlayerStats] =
+  const [playerStats, updatePlayerStats] =
     useState<PlayerStats>(initialPlayerStats);
+
+  const actions = getActions(playerStats);
 
   return (
     <main className="flex min-h-screen">
       <div className="container flex flex-col gap-12 py-12">
         <PlayerStatsForm
-          playerStats={playerStat}
+          playerStats={playerStats}
           updatePlayerStats={updatePlayerStats}
         />
         <DataTable columns={columns} data={actions} />
