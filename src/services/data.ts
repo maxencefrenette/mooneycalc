@@ -1,9 +1,17 @@
 import rawGameData from "~/data/init_client_info.json";
 
 interface GameData {
+  itemDetailMap: Record<string, ItemDetail>;
   skillDetailMap: Record<string, SkillDetail>;
   actionDetailMap: Record<string, ActionDetail>;
   actionTypeDetailMap: Record<string, ActionTypeDetail>;
+}
+
+export interface ItemDetail {
+  hrid: string;
+  name: string;
+  // TODO: add the rest of the fields
+  sortIndex: number;
 }
 
 export interface SkillDetail {
