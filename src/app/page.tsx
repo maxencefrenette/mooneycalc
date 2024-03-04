@@ -6,25 +6,16 @@ import { DataTable } from "~/components/ui/data-table";
 import { PlayerStatsForm } from "~/components/player-stats-form";
 import { initialPlayerStats, type PlayerStats } from "~/services/player-stats";
 import { useState } from "react";
-import { ArrowUpDown } from "lucide-react";
-import { Button } from "~/components/ui/button";
+import { DataTableColumnHeader } from "~/components/ui/data-table-column-header";
 
 const columnHelper = createColumnHelper<ComputedAction>();
 
 const columns: ColumnDef<ComputedAction>[] = [
   {
     accessorKey: "name",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Action" />
+    ),
   },
   columnHelper.display({
     id: "inputs",
@@ -60,17 +51,9 @@ const columns: ColumnDef<ComputedAction>[] = [
   }),
   {
     accessorKey: "actionsPerHour",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Actions/h
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Actions/h" />
+    ),
     cell: ({ row }) => row.original.actionsPerHour.toFixed(0),
   },
 ];
