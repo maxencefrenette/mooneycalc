@@ -1,16 +1,29 @@
 import rawGameData from "~/data/init_client_info.json";
 
 interface GameData {
+  equipmentTypeDetailMap: Record<string, EquipmentTypeDetail>;
   itemDetailMap: Record<string, ItemDetail>;
   skillDetailMap: Record<string, SkillDetail>;
   actionDetailMap: Record<string, ActionDetail>;
   actionTypeDetailMap: Record<string, ActionTypeDetail>;
 }
 
+export interface EquipmentTypeDetail {
+  hrid: string;
+  name: string;
+  itemLocationHrid: string;
+  sortIndex: number;
+}
+
 export interface ItemDetail {
   hrid: string;
   name: string;
-  // TODO: add the rest of the fields
+  // TODO: add missing fields
+  equipmentDetail: {
+    type: string;
+    // TODO: add missing fields
+  };
+  // TODO: add missing fields
   sortIndex: number;
 }
 
