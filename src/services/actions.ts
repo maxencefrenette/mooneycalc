@@ -119,7 +119,13 @@ function computeSingleAction(
     if (bid === -1) bid = 0;
     if (ask === -1) ask = bid;
 
-    return sum + bid * output.count * actionsPerHour;
+    const p = settings.market.outputBidAskProportion;
+    let price = (1 - p) * bid + p * ask;
+
+    // TODO: set price to sell price if it's higher than market price
+    price = Math.max(price, gameData.itemDetailMap[output.itemHrid]!.sellPrice);
+
+    return sum + price * output.count * actionsPerHour;
   }, 0);
   const cost = inputs.reduce((sum, input) => {
     if (input.itemHrid === "/items/coin")
@@ -132,7 +138,10 @@ function computeSingleAction(
     if (ask === -1) ask = 1e9;
     if (bid === -1) bid = ask;
 
-    return sum + ask * input.count * actionsPerHour;
+    const p = settings.market.inputBidAskProportion;
+    const price = (1 - p) * ask + p * bid;
+
+    return sum + price * input.count * actionsPerHour;
   }, 0);
   const profit = revenue - cost;
 

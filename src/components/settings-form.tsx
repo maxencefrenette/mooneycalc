@@ -13,6 +13,7 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { equipmentTypes } from "~/services/equipment-types";
 import { itemsByEquipmentType } from "~/services/items";
+import { BidAskSlider } from "./bid-ask-slider";
 
 export interface SettingsFormProps {
   settings: Settings;
@@ -113,6 +114,38 @@ export function SettingsForm({ settings, updateSettings }: SettingsFormProps) {
             </div>
           );
         })}
+      </div>
+      <div className="h-12" />
+      <h1 className="pb-4 text-xl">Market</h1>
+      <div className="flex justify-around">
+        <BidAskSlider
+          label="Input Item Prices"
+          inverted={true}
+          value={settings.market.inputBidAskProportion}
+          updateValue={(value) =>
+            updateSettings({
+              ...settings,
+              market: {
+                ...settings.market,
+                inputBidAskProportion: value,
+              },
+            })
+          }
+        />
+        <BidAskSlider
+          label="Output Item Prices"
+          inverted={false}
+          value={settings.market.outputBidAskProportion}
+          updateValue={(value) =>
+            updateSettings({
+              ...settings,
+              market: {
+                ...settings.market,
+                outputBidAskProportion: value,
+              },
+            })
+          }
+        />
       </div>
     </div>
   );

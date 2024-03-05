@@ -18,7 +18,14 @@ export interface EquipmentTypeDetail {
 export interface ItemDetail {
   hrid: string;
   name: string;
-  // TODO: add missing fields
+  description: string;
+  categoryHrid: string;
+  sellPrice: number;
+  isTradeable: boolean;
+  isOpenable: boolean;
+  itemLevel: number;
+  enhancementCosts: unknown; // TODO
+  protectionItemHrids: unknown; // TODO
   equipmentDetail: {
     type: string;
     combatStats: unknown; // TODO
@@ -48,7 +55,8 @@ export interface ItemDetail {
       skillingExperience: number;
     };
   };
-  // TODO: add missing fields
+  consumableDetail: unknown; // TODO
+  abilityBookDetail: unknown; // TODO
   sortIndex: number;
 }
 

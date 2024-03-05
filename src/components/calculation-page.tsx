@@ -1,7 +1,7 @@
 "use client";
 import { type ComputedAction, getActions } from "~/services/actions";
 import { DataTable } from "~/components/ui/data-table";
-import { SettingsForm } from "~/components/settings-form";
+import { SettingsForm } from "./settings-form";
 import { initialSettings, type Settings } from "~/services/settings";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "./ui/data-table-column-header";
