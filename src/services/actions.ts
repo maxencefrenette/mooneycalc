@@ -1,7 +1,7 @@
 import { type ActionDetail, gameData, type ItemCount } from "./data";
 import { itemName } from "./items";
 import { type Market } from "./market";
-import { type PlayerStats } from "./player-stats";
+import { type Settings } from "./settings";
 
 const sortedActions = Object.values(gameData.actionDetailMap).sort(
   (a, b) =>
@@ -19,11 +19,11 @@ export interface ComputedAction {
   profit: number;
 }
 
-function getToolBonuses(skillHrid: string, playerStats: PlayerStats) {
+function getToolBonuses(skillHrid: string, settings: Settings) {
   let speed = 0;
   let efficiency = 0;
 
-  for (const equipmentHrid of Object.values(playerStats.equipment)) {
+  for (const equipmentHrid of Object.values(settings.equipment)) {
     if (equipmentHrid === null) continue;
 
     const equipment = gameData.itemDetailMap[equipmentHrid]!;
@@ -76,7 +76,7 @@ function getToolBonuses(skillHrid: string, playerStats: PlayerStats) {
 
 function computeSingleAction(
   action: ActionDetail,
-  playerStats: PlayerStats,
+  settings: Settings,
   market: Market,
 ): ComputedAction {
   const inputs = action.inputItems?.slice() ?? [];
@@ -90,11 +90,11 @@ function computeSingleAction(
   // Compute tool bonuses
   const { speed: toolSpeed, efficiency: toolEfficiency } = getToolBonuses(
     action.levelRequirement.skillHrid,
-    playerStats,
+    settings,
   );
 
   // Compute level efficiency
-  const level = playerStats.levels[action.levelRequirement.skillHrid]!;
+  const level = settings.levels[action.levelRequirement.skillHrid]!;
   const levelsAboveRequirement = Math.max(
     0,
     level - action.levelRequirement.level,
@@ -146,8 +146,8 @@ function computeSingleAction(
   };
 }
 
-export function getActions(playerStats: PlayerStats, market: Market) {
+export function getActions(settings: Settings, market: Market) {
   return Object.values(sortedActions).map((a) =>
-    computeSingleAction(a, playerStats, market),
+    computeSingleAction(a, settings, market),
   );
 }

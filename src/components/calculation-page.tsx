@@ -1,8 +1,8 @@
 "use client";
 import { type ComputedAction, getActions } from "~/services/actions";
 import { DataTable } from "~/components/ui/data-table";
-import { PlayerStatsForm } from "~/components/player-stats-form";
-import { initialPlayerStats, type PlayerStats } from "~/services/player-stats";
+import { SettingsForm } from "~/components/settings-form";
+import { initialSettings, type Settings } from "~/services/settings";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "./ui/data-table-column-header";
 import { type Market } from "~/services/market";
@@ -76,20 +76,17 @@ export interface CalculationPageProps {
 }
 
 export function CalculationPage({ market }: CalculationPageProps) {
-  const [playerStats, updatePlayerStats] = useLocalStorage<PlayerStats>(
+  const [settings, updateSettings] = useLocalStorage<Settings>(
     "player_stats",
-    initialPlayerStats,
+    initialSettings,
   );
 
-  const actions = getActions(playerStats, market);
+  const actions = getActions(settings, market);
 
   return (
     <main className="flex min-h-screen">
       <div className="container flex flex-col gap-12 py-12">
-        <PlayerStatsForm
-          playerStats={playerStats}
-          updatePlayerStats={updatePlayerStats}
-        />
+        <SettingsForm settings={settings} updateSettings={updateSettings} />
         <DataTable
           columns={columns}
           data={actions}

@@ -1,6 +1,6 @@
 "use client";
 
-import { type PlayerStats } from "~/services/player-stats";
+import { type Settings } from "~/services/settings";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { skills } from "~/services/skills";
@@ -14,21 +14,18 @@ import {
 import { equipmentTypes } from "~/services/equipment-types";
 import { itemsByEquipmentType } from "~/services/items";
 
-export interface PlayerStatsFormProps {
-  playerStats: PlayerStats;
-  updatePlayerStats: (playerStats: PlayerStats) => void;
+export interface SettingsFormProps {
+  settings: Settings;
+  updateSettings: (settings: Settings) => void;
 }
 
-export function PlayerStatsForm({
-  playerStats,
-  updatePlayerStats,
-}: PlayerStatsFormProps) {
+export function SettingsForm({ settings, updateSettings }: SettingsFormProps) {
   return (
     <div>
       <h1 className="pb-4 text-xl">Levels</h1>
       <div className="flex flex-wrap gap-4">
         {skills.map(({ hrid, name }) => {
-          const level = playerStats.levels[hrid]!;
+          const level = settings.levels[hrid]!;
 
           return (
             <div
@@ -41,10 +38,10 @@ export function PlayerStatsForm({
                 id={hrid}
                 value={level}
                 onChange={(e) =>
-                  updatePlayerStats({
-                    ...playerStats,
+                  updateSettings({
+                    ...settings,
                     levels: {
-                      ...playerStats.levels,
+                      ...settings.levels,
                       [hrid]: parseInt(e.target.value, 10),
                     },
                   })
@@ -58,7 +55,7 @@ export function PlayerStatsForm({
       <h1 className="pb-4 text-xl">Equipment</h1>
       <div className="flex flex-wrap gap-4">
         {equipmentTypes.map(({ hrid, name }) => {
-          const equipment = playerStats.equipment[hrid]!;
+          const equipment = settings.equipment[hrid]!;
 
           return (
             <div
@@ -81,10 +78,10 @@ export function PlayerStatsForm({
                   {equipment ? (
                     <DropdownMenuItem
                       onClick={() =>
-                        updatePlayerStats({
-                          ...playerStats,
+                        updateSettings({
+                          ...settings,
                           equipment: {
-                            ...playerStats.equipment,
+                            ...settings.equipment,
                             [hrid]: null,
                           },
                         })
@@ -98,10 +95,10 @@ export function PlayerStatsForm({
                       <DropdownMenuItem
                         key={itemHrid}
                         onClick={() =>
-                          updatePlayerStats({
-                            ...playerStats,
+                          updateSettings({
+                            ...settings,
                             equipment: {
-                              ...playerStats.equipment,
+                              ...settings.equipment,
                               [hrid]: itemHrid,
                             },
                           })

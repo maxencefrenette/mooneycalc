@@ -1,11 +1,11 @@
 import { gameData } from "./data";
 
-export interface PlayerStats {
+export interface Settings {
   levels: Record<string, number>;
   equipment: Record<string, string | null>;
 }
 
-export const initialPlayerStats: PlayerStats = {
+export const initialSettings: Settings = {
   levels: Object.values(gameData.skillDetailMap).reduce(
     (acc, skill) => ({ ...acc, [skill.hrid]: 1 }),
     {},
