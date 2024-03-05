@@ -14,7 +14,9 @@ export interface ComputedAction {
   id: string;
   name: string;
   inputs: ItemCount[];
+  inputsPrice: number;
   outputs: ItemCount[];
+  outputsPrice: number;
   actionsPerHour: number;
   profit: number;
 }
@@ -149,7 +151,9 @@ function computeSingleAction(
     id: action.hrid,
     name: action.name,
     inputs,
+    inputsPrice: cost,
     outputs,
+    outputsPrice: revenue,
     actionsPerHour,
     profit,
   };

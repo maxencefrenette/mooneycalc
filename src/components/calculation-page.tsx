@@ -33,6 +33,19 @@ export const columns: ColumnDef<ComputedAction>[] = [
       );
     },
   }),
+  {
+    accessorKey: "inputsPrice",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Inputs price" />
+    ),
+    cell: ({ row }) => (
+      <div className="max-w-28 text-right">
+        {row.original.inputsPrice.toLocaleString(undefined, {
+          maximumFractionDigits: 0,
+        })}
+      </div>
+    ),
+  },
   columnHelper.display({
     id: "outputs",
     header: "Outputs",
@@ -49,6 +62,19 @@ export const columns: ColumnDef<ComputedAction>[] = [
       );
     },
   }),
+  {
+    accessorKey: "outputsPrice",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Outputs price" />
+    ),
+    cell: ({ row }) => (
+      <div className="max-w-28 text-right">
+        {row.original.outputsPrice.toLocaleString(undefined, {
+          maximumFractionDigits: 0,
+        })}
+      </div>
+    ),
+  },
   {
     accessorKey: "actionsPerHour",
     header: ({ column }) => (
