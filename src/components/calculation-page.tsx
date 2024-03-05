@@ -90,7 +90,11 @@ export function CalculationPage({ market }: CalculationPageProps) {
           playerStats={playerStats}
           updatePlayerStats={updatePlayerStats}
         />
-        <DataTable columns={columns} data={actions} />
+        <DataTable
+          columns={columns}
+          data={actions}
+          initialSorting={[{ id: "profit", desc: true }]}
+        />
       </div>
     </main>
   );
