@@ -21,7 +21,32 @@ export interface ItemDetail {
   // TODO: add missing fields
   equipmentDetail: {
     type: string;
-    // TODO: add missing fields
+    combatStats: unknown; // TODO
+    noncombatStats: {
+      milkingSpeed: number;
+      foragingSpeed: number;
+      woodcuttingSpeed: number;
+      cheesesmithingSpeed: number;
+      craftingSpeed: number;
+      tailoringSpeed: number;
+      cookingSpeed: number;
+      brewingSpeed: number;
+      enhancingSpeed: number;
+      taskSpeed: number;
+      milkingEfficiency: number;
+      foragingEfficiency: number;
+      woodcuttingEfficiency: number;
+      cheesesmithingEfficiency: number;
+      craftingEfficiency: number;
+      tailoringEfficiency: number;
+      cookingEfficiency: number;
+      brewingEfficiency: number;
+      skillingEfficiency: number;
+      enhancingSuccess: number;
+      gatheringQuantity: number;
+      skillingRareFind: number;
+      skillingExperience: number;
+    };
   };
   // TODO: add missing fields
   sortIndex: number;

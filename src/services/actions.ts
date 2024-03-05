@@ -19,6 +19,61 @@ export interface ComputedAction {
   profit: number;
 }
 
+function getToolBonuses(skillHrid: string, playerStats: PlayerStats) {
+  let speed = 0;
+  let efficiency = 0;
+
+  for (const equipmentHrid of Object.values(playerStats.equipment)) {
+    if (equipmentHrid === null) continue;
+
+    const equipment = gameData.itemDetailMap[equipmentHrid]!;
+    const stats = equipment.equipmentDetail.noncombatStats;
+
+    if (!stats) debugger;
+
+    if (skillHrid === "/skills/milking") {
+      speed += stats.milkingSpeed;
+      efficiency += stats.milkingEfficiency;
+    }
+    if (skillHrid === "/skills/foraging") {
+      speed += stats.foragingSpeed;
+      efficiency += stats.foragingEfficiency;
+    }
+    if (skillHrid === "/skills/woodcutting") {
+      speed += stats.woodcuttingSpeed;
+      efficiency += stats.woodcuttingEfficiency;
+    }
+    if (skillHrid === "/skills/cheesesmithing") {
+      speed += stats.cheesesmithingSpeed;
+      efficiency += stats.cheesesmithingEfficiency;
+    }
+    if (skillHrid === "/skills/crafting") {
+      speed += stats.craftingSpeed;
+      efficiency += stats.craftingEfficiency;
+    }
+    if (skillHrid === "/skills/tailoring") {
+      speed += stats.tailoringSpeed;
+      efficiency += stats.tailoringEfficiency;
+    }
+    if (skillHrid === "/skills/cooking") {
+      speed += stats.cookingSpeed;
+      efficiency += stats.cookingEfficiency;
+    }
+    if (skillHrid === "/skills/brewing") {
+      speed += stats.brewingSpeed;
+      efficiency += stats.brewingEfficiency;
+    }
+    if (skillHrid === "/skills/enhancing") {
+      speed += stats.enhancingSpeed;
+      efficiency += stats.enhancingSuccess;
+    }
+    speed += stats.taskSpeed;
+    efficiency += stats.skillingEfficiency;
+  }
+
+  return { speed, efficiency };
+}
+
 function computeSingleAction(
   action: ActionDetail,
   playerStats: PlayerStats,
@@ -32,16 +87,25 @@ function computeSingleAction(
   const outputs = action.outputItems ?? [];
   // TODO: take into account drop tables
 
-  // Compute efficiency
+  // Compute tool bonuses
+  const { speed: toolSpeed, efficiency: toolEfficiency } = getToolBonuses(
+    action.levelRequirement.skillHrid,
+    playerStats,
+  );
+
+  // Compute level efficiency
   const level = playerStats.levels[action.levelRequirement.skillHrid]!;
   const levelsAboveRequirement = Math.max(
     0,
     level - action.levelRequirement.level,
   );
-  const efficiency = 1 + 0.01 * levelsAboveRequirement;
+  const levelEfficiency = 0.01 * levelsAboveRequirement;
 
   // Compute actions per hour
-  const actionsPerHour = (3600_000_000_000 / action.baseTimeCost) * efficiency;
+  const baseActionsPerHour = 3600_000_000_000 / action.baseTimeCost;
+  const speed = 1 + toolSpeed;
+  const efficiency = 1 + toolEfficiency + levelEfficiency;
+  const actionsPerHour = baseActionsPerHour * speed * efficiency;
 
   // Compute profits
   const revenue = outputs.reduce((sum, output) => {
