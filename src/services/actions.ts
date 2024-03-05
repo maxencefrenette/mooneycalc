@@ -32,14 +32,16 @@ function computeSingleAction(
   const outputs = action.outputItems ?? [];
   // TODO: take into account drop tables
 
-  // Compute actions per hour
+  // Compute efficiency
   const level = playerStats.levels[action.levelRequirement.skillHrid]!;
   const levelsAboveRequirement = Math.max(
     0,
     level - action.levelRequirement.level,
   );
-  const actionTime = action.baseTimeCost / (1 + 0.01 * levelsAboveRequirement);
-  const actionsPerHour = 3600_000_000_000 / actionTime;
+  const efficiency = 1 + 0.01 * levelsAboveRequirement;
+
+  // Compute actions per hour
+  const actionsPerHour = (3600_000_000_000 / action.baseTimeCost) * efficiency;
 
   // Compute profits
   const revenue = outputs.reduce((sum, output) => {
