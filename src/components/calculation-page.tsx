@@ -26,7 +26,10 @@ export const columns: ColumnDef<ComputedAction>[] = [
         <>
           {action.inputs.map((input) => (
             <div key={input.itemHrid}>
-              {input.count} x {input.itemHrid}
+              {input.count.toLocaleString(undefined, {
+                maximumFractionDigits: 2,
+              })}{" "}
+              x {input.itemHrid}
             </div>
           ))}
         </>
@@ -55,7 +58,10 @@ export const columns: ColumnDef<ComputedAction>[] = [
         <>
           {action.outputs.map((output) => (
             <div key={output.itemHrid}>
-              {output.count} x {output.itemHrid}
+              {output.count.toLocaleString(undefined, {
+                maximumFractionDigits: 2,
+              })}{" "}
+              x {output.itemHrid}
             </div>
           ))}
         </>
