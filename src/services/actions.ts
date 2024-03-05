@@ -43,6 +43,9 @@ function computeSingleAction(
 
   // Compute profits
   const revenue = outputs.reduce((sum, output) => {
+    if (output.itemHrid === "/items/coin")
+      return sum + output.count * actionsPerHour;
+
     let { bid, ask } = market.market[itemName(output.itemHrid)] ?? {
       bid: -1,
       ask: -1,
@@ -53,6 +56,9 @@ function computeSingleAction(
     return sum + bid * output.count * actionsPerHour;
   }, 0);
   const cost = inputs.reduce((sum, input) => {
+    if (input.itemHrid === "/items/coin")
+      return sum + input.count * actionsPerHour;
+
     let { bid, ask } = market.market[itemName(input.itemHrid)] ?? {
       bid: -1,
       ask: -1,
