@@ -86,8 +86,14 @@ function computeSingleAction(
     inputs.push({ itemHrid: action.upgradeItemHrid, count: 1 });
   }
 
-  const outputs = action.outputItems ?? [];
-  // TODO: take into account drop tables
+  let outputs = action.outputItems ?? [];
+  if (action.dropTable) {
+    const dropTableOutputs = action.dropTable.map((e) => ({
+      itemHrid: e.itemHrid,
+      count: e.dropRate * 0.5 * (e.minCount + e.maxCount),
+    }));
+    outputs = [...outputs, ...dropTableOutputs];
+  }
 
   // Compute tool bonuses
   const { speed: toolSpeed, efficiency: toolEfficiency } = getToolBonuses(

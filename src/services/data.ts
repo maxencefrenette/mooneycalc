@@ -81,13 +81,20 @@ export interface ActionDetail {
     skillHrid: string;
     value: number;
   };
-  dropTable: unknown;
-  rareDropTable: unknown;
+  dropTable: DropTableEntry[] | null;
+  rareDropTable: DropTableEntry[] | null;
   upgradeItemHrid: string;
   inputItems: ItemCount[] | null;
   outputItems: ItemCount[] | null;
   monsterSpawnInfo: unknown;
   sortIndex: number;
+}
+
+export interface DropTableEntry {
+  itemHrid: string;
+  dropRate: number;
+  minCount: number;
+  maxCount: number;
 }
 
 export interface ItemCount {
