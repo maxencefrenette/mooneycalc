@@ -7,11 +7,12 @@ export interface MarketEntry {
   ask: number;
 }
 
-export async function fetchMarket(): Promise<Market> {
+export async function fetchMarket(name: string): Promise<Market> {
   const response = await fetch(
-    "https://raw.githubusercontent.com/holychikenz/MWIApi/main/milkyapi.json",
+    `https://raw.githubusercontent.com/holychikenz/MWIApi/main/${name}`,
     { next: { revalidate: 60 } },
   );
+
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   return (await response.json()) as Market;
 }

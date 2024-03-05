@@ -5,11 +5,15 @@ import { CalculationPage } from "../components/calculation-page";
 import { ClientOnly } from "~/components/client-only";
 
 export default async function HomePage() {
-  const market = await fetchMarket();
+  const currentMarket = await fetchMarket("milkyapi.json");
+  const medianMarket = await fetchMarket("medianmarket.json");
 
   return (
     <ClientOnly>
-      <CalculationPage market={market} />
+      <CalculationPage
+        currentMarket={currentMarket}
+        medianMarket={medianMarket}
+      />
     </ClientOnly>
   );
 }

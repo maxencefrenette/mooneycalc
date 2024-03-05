@@ -6,6 +6,7 @@ export interface Settings {
   market: {
     inputBidAskProportion: number;
     outputBidAskProportion: number;
+    pricePeriod: "latest" | "median";
   };
 }
 
@@ -21,5 +22,6 @@ export const initialSettings: Settings = {
   market: {
     inputBidAskProportion: 0.0,
     outputBidAskProportion: 1.0,
+    pricePeriod: "latest",
   },
 };

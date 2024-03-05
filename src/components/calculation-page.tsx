@@ -98,14 +98,21 @@ export const columns: ColumnDef<ComputedAction>[] = [
 ];
 
 export interface CalculationPageProps {
-  market: Market;
+  currentMarket: Market;
+  medianMarket: Market;
 }
 
-export function CalculationPage({ market }: CalculationPageProps) {
+export function CalculationPage({
+  currentMarket,
+  medianMarket,
+}: CalculationPageProps) {
   const [settings, updateSettings] = useLocalStorage<Settings>(
     "player_stats",
     initialSettings,
   );
+
+  const market =
+    settings.market.pricePeriod === "latest" ? currentMarket : medianMarket;
 
   const actions = getActions(settings, market);
 

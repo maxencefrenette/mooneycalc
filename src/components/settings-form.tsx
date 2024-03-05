@@ -14,6 +14,7 @@ import {
 import { equipmentTypes } from "~/services/equipment-types";
 import { itemsByEquipmentType } from "~/services/items";
 import { BidAskSlider } from "./bid-ask-slider";
+import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 
 export interface SettingsFormProps {
   settings: Settings;
@@ -146,6 +147,31 @@ export function SettingsForm({ settings, updateSettings }: SettingsFormProps) {
             })
           }
         />
+        <RadioGroup
+          value={settings.market.pricePeriod}
+          onValueChange={(value) => {
+            if (value !== "latest" && value !== "median") {
+              return;
+            }
+
+            return updateSettings({
+              ...settings,
+              market: {
+                ...settings.market,
+                pricePeriod: value,
+              },
+            });
+          }}
+        >
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="latest" id="latest" />
+            <Label htmlFor="latest">Latest Prices</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="median" id="median" />
+            <Label htmlFor="median">24h Median Prices</Label>
+          </div>
+        </RadioGroup>
       </div>
     </div>
   );
