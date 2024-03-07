@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { equipmentTypes } from "~/services/equipment-types";
-import { itemsByEquipmentType } from "~/services/items";
+import { itemName, itemsByEquipmentType } from "~/services/items";
 import { BidAskSlider } from "./bid-ask-slider";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 
@@ -70,7 +70,7 @@ export function SettingsForm({ settings, updateSettings }: SettingsFormProps) {
                   <Input
                     type="text"
                     id={hrid}
-                    value={equipment ?? ""}
+                    value={itemName(equipment) ?? ""}
                     readOnly
                     className="cursor-pointer"
                   />
