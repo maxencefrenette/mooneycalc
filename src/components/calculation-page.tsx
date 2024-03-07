@@ -7,6 +7,7 @@ import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "./ui/data-table-column-header";
 import { type Market } from "~/services/market";
 import { useLocalStorage } from "@uidotdev/usehooks";
+import { itemName } from "~/services/items";
 
 const columnHelper = createColumnHelper<ComputedAction>();
 
@@ -29,7 +30,7 @@ export const columns: ColumnDef<ComputedAction>[] = [
               {input.count.toLocaleString(undefined, {
                 maximumFractionDigits: 2,
               })}{" "}
-              x {input.itemHrid}
+              x {itemName(input.itemHrid)}
             </div>
           ))}
         </>
@@ -61,7 +62,7 @@ export const columns: ColumnDef<ComputedAction>[] = [
               {output.count.toLocaleString(undefined, {
                 maximumFractionDigits: 2,
               })}{" "}
-              x {output.itemHrid}
+              x {itemName(output.itemHrid)}
             </div>
           ))}
         </>
