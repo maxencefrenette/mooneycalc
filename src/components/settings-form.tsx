@@ -54,7 +54,7 @@ export function SettingsForm({ settings, updateSettings }: SettingsFormProps) {
         })}
       </div>
       <div className="h-12" />
-      <h1 className="pb-4 text-xl">Equipment</h1>
+      <h1 className="pb-4 text-xl">Skilling Equipment</h1>
       <div className="flex flex-wrap gap-4">
         {equipmentTypes.map(({ hrid, name }) => {
           const equipment = settings.equipment[hrid]!;
