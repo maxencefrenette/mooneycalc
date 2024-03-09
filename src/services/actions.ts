@@ -194,6 +194,12 @@ function computeSingleAction(
 export function getActions(settings: Settings, market: Market) {
   let actions = Object.values(sortedActions);
 
+  // Filter out combat and enhancement actions
+  actions = actions.filter(
+    (a) =>
+      a.type !== "/action_types/combat" && a.type !== "/action_types/enhancing",
+  );
+
   // Filter out actions with unmet level requirements
   if (settings.filters.hideUnmetLevelRequirements) {
     actions = actions.filter((a) => {
