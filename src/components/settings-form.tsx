@@ -15,6 +15,7 @@ import { equipmentTypes } from "~/services/equipment-types";
 import { itemName, itemsByEquipmentType } from "~/services/items";
 import { BidAskSlider } from "./bid-ask-slider";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
+import { Checkbox } from "./ui/checkbox";
 
 export interface SettingsFormProps {
   settings: Settings;
@@ -172,6 +173,33 @@ export function SettingsForm({ settings, updateSettings }: SettingsFormProps) {
             <Label htmlFor="median">24h Median Prices</Label>
           </div>
         </RadioGroup>
+      </div>
+      <div className="h-12" />
+      <h1 className="pb-4 text-xl">Filters</h1>
+      <div className="flex items-center space-x-2">
+        <Checkbox
+          id="hide-unmet-level-requirements"
+          checked={settings?.filters?.hideUnmetLevelRequirements ?? true}
+          onCheckedChange={(checked) => {
+            if (checked === "indeterminate") {
+              return;
+            }
+
+            return updateSettings({
+              ...settings,
+              filters: {
+                ...settings.filters,
+                hideUnmetLevelRequirements: checked,
+              },
+            });
+          }}
+        />
+        <Label
+          htmlFor="hide-unmet-level-requirements"
+          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          Hide actions with unmet level requirements
+        </Label>
       </div>
     </div>
   );

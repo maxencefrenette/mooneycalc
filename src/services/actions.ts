@@ -170,7 +170,18 @@ function computeSingleAction(
 }
 
 export function getActions(settings: Settings, market: Market) {
-  return Object.values(sortedActions).map((a) =>
+  let actions = Object.values(sortedActions);
+
+  // Filter out actions with unmet level requirements
+  if (settings.filters.hideUnmetLevelRequirements) {
+    actions = actions.filter((a) => {
+      const level = settings.levels[a.levelRequirement.skillHrid]!;
+      return level >= a.levelRequirement.level;
+    });
+  }
+
+  const computedActions = actions.map((a) =>
     computeSingleAction(a, settings, market),
   );
+  return computedActions;
 }

@@ -8,6 +8,9 @@ export interface Settings {
     outputBidAskProportion: number;
     pricePeriod: "latest" | "median";
   };
+  filters: {
+    hideUnmetLevelRequirements: boolean;
+  };
 }
 
 export const initialSettings: Settings = {
@@ -23,5 +26,8 @@ export const initialSettings: Settings = {
     inputBidAskProportion: 0.0,
     outputBidAskProportion: 1.0,
     pricePeriod: "latest",
+  },
+  filters: {
+    hideUnmetLevelRequirements: true,
   },
 };
