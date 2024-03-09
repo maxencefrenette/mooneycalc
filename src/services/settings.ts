@@ -23,6 +23,11 @@ const PersistedStateSchema = z.object({
 });
 type PersistedState = z.infer<typeof PersistedStateSchema>;
 
+const DeepPartialPersistedStateSchema = PersistedStateSchema.deepPartial();
+type DeepPartialPersistedState = z.infer<
+  typeof DeepPartialPersistedStateSchema
+>;
+
 export interface SettingsState extends PersistedState {
   updateSettings: (newSettings: Settings) => void;
 }
@@ -61,6 +66,41 @@ function strictMergeRecords<T>(
   return result;
 }
 
+function mergeStates(
+  currentState: SettingsState,
+  persistedState: DeepPartialPersistedState,
+): SettingsState {
+  return {
+    ...currentState,
+    settings: {
+      levels: strictMergeRecords(
+        currentState.settings.levels,
+        persistedState.settings?.levels ?? {},
+      ),
+      equipment: strictMergeRecords(
+        currentState.settings.equipment,
+        persistedState.settings?.equipment ?? {},
+      ),
+      market: {
+        inputBidAskProportion:
+          persistedState.settings?.market?.inputBidAskProportion ??
+          currentState.settings.market.inputBidAskProportion,
+        outputBidAskProportion:
+          persistedState.settings?.market?.outputBidAskProportion ??
+          currentState.settings.market.outputBidAskProportion,
+        pricePeriod:
+          persistedState.settings?.market?.pricePeriod ??
+          currentState.settings.market.pricePeriod,
+      },
+      filters: {
+        hideUnmetLevelRequirements:
+          persistedState.settings?.filters?.hideUnmetLevelRequirements ??
+          currentState.settings.filters.hideUnmetLevelRequirements,
+      },
+    },
+  };
+}
+
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set) => ({
@@ -71,44 +111,14 @@ export const useSettingsStore = create<SettingsState>()(
       name: "settings",
       merge: (rawPersistedState, currentState) => {
         const result =
-          PersistedStateSchema.deepPartial().safeParse(rawPersistedState);
+          DeepPartialPersistedStateSchema.safeParse(rawPersistedState);
         if (!result.success) {
           console.error("Failed to parse persisted settings", result.error);
           return currentState;
         }
 
         const persistedState = result.data;
-        const settings = {
-          levels: strictMergeRecords(
-            currentState.settings.levels,
-            persistedState.settings?.levels ?? {},
-          ),
-          equipment: strictMergeRecords(
-            currentState.settings.equipment,
-            persistedState.settings?.equipment ?? {},
-          ),
-          market: {
-            inputBidAskProportion:
-              persistedState.settings?.market?.inputBidAskProportion ??
-              currentState.settings.market.inputBidAskProportion,
-            outputBidAskProportion:
-              persistedState.settings?.market?.outputBidAskProportion ??
-              currentState.settings.market.outputBidAskProportion,
-            pricePeriod:
-              persistedState.settings?.market?.pricePeriod ??
-              currentState.settings.market.pricePeriod,
-          },
-          filters: {
-            hideUnmetLevelRequirements:
-              persistedState.settings?.filters?.hideUnmetLevelRequirements ??
-              currentState.settings.filters.hideUnmetLevelRequirements,
-          },
-        };
-
-        return {
-          ...currentState,
-          settings,
-        };
+        return mergeStates(currentState, persistedState);
       },
       partialize: (state) => {
         return PersistedStateSchema.parse(state);
