@@ -1,6 +1,6 @@
 "use client";
 
-import { type Settings } from "~/services/settings";
+import { useSettingsStore } from "~/services/settings";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { skills } from "~/services/skills";
@@ -23,12 +23,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { gameData } from "~/services/data";
 
-export interface SettingsFormProps {
-  settings: Settings;
-  updateSettings: (settings: Settings) => void;
-}
+export function SettingsForm() {
+  const settings = useSettingsStore((state) => state.settings);
+  const updateSettings = useSettingsStore((state) => state.updateSettings);
 
-export function SettingsForm({ settings, updateSettings }: SettingsFormProps) {
   // Filter out combat skills
   const combatSkillsHrids = [
     "/skills/stamina",

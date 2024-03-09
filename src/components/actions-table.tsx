@@ -1,7 +1,6 @@
 "use client";
 import { type ComputedAction, getActions } from "~/services/actions";
 import { DataTable } from "~/components/ui/data-table";
-import { SettingsForm } from "./settings-form";
 import { useSettingsStore } from "~/services/settings";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "./ui/data-table-column-header";
@@ -138,28 +137,21 @@ export interface CalculationPageProps {
   medianMarket: Market;
 }
 
-export function CalculationPage({
+export function ActionsDataTable({
   currentMarket,
   medianMarket,
 }: CalculationPageProps) {
   const settings = useSettingsStore((state) => state.settings);
-  const updateSettings = useSettingsStore((state) => state.updateSettings);
-
   const market =
     settings.market.pricePeriod === "latest" ? currentMarket : medianMarket;
 
   const actions = getActions(settings, market);
 
   return (
-    <main className="flex min-h-screen">
-      <div className="container flex flex-col gap-6 py-12">
-        <SettingsForm settings={settings} updateSettings={updateSettings} />
-        <DataTable
-          columns={columns}
-          data={actions}
-          initialSorting={[{ id: "profit", desc: true }]}
-        />
-      </div>
-    </main>
+    <DataTable
+      columns={columns}
+      data={actions}
+      initialSorting={[{ id: "profit", desc: true }]}
+    />
   );
 }
