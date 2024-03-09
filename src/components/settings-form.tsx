@@ -23,11 +23,25 @@ export interface SettingsFormProps {
 }
 
 export function SettingsForm({ settings, updateSettings }: SettingsFormProps) {
+  // Filter out combat skills
+  const combatSkillsHrids = [
+    "/skills/stamina",
+    "/skills/intelligence",
+    "/skills/attack",
+    "/skills/power",
+    "/skills/defense",
+    "/skills/ranged",
+    "/skills/magic",
+  ];
+  const skillingSkills = skills.filter(
+    ({ hrid }) => !combatSkillsHrids.includes(hrid),
+  );
+
   return (
     <div>
       <h1 className="pb-4 text-xl">Levels</h1>
       <div className="flex flex-wrap gap-4">
-        {skills.map(({ hrid, name }) => {
+        {skillingSkills.map(({ hrid, name }) => {
           const level = settings.levels[hrid]!;
 
           return (
