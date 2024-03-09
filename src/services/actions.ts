@@ -24,6 +24,14 @@ export interface ComputedAction {
   profit: number;
 }
 
+function lerp(a: number, b: number, t: number) {
+  // This is needed to support cases where a or b is infinity
+  if (t <= 0) return a;
+  if (t >= 1) return b;
+
+  return a + (b - a) * t;
+}
+
 function getToolBonuses(skillHrid: string, settings: Settings) {
   let speed = 0;
   let efficiency = 0;
@@ -131,7 +139,7 @@ function computeSingleAction(
     if (ask === -1) ask = bid;
 
     const p = settings.market.outputBidAskProportion;
-    let price = (1 - p) * bid + p * ask;
+    let price = lerp(bid, ask, p);
 
     // TODO: set price to sell price if it's higher than market price
     price = Math.max(price, gameData.itemDetailMap[output.itemHrid]!.sellPrice);
@@ -158,11 +166,11 @@ function computeSingleAction(
       bid: -1,
       ask: -1,
     };
-    if (ask === -1) ask = 1e9;
+    if (ask === -1) ask = Number.POSITIVE_INFINITY;
     if (bid === -1) bid = ask;
 
     const p = settings.market.inputBidAskProportion;
-    const price = (1 - p) * ask + p * bid;
+    const price = lerp(ask, bid, p);
 
     return sum + price * input.count;
   }, 0);
