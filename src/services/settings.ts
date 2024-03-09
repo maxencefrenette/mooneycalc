@@ -1,5 +1,5 @@
 import { gameData } from "./data";
-import { create } from "zustand";
+import { type Mutate, type StoreApi, create } from "zustand";
 import { persist } from "zustand/middleware";
 import { z } from "zod";
 
@@ -116,3 +116,26 @@ export const useSettingsStore = create<SettingsState>()(
     },
   ),
 );
+
+// Rehydrate on storage event
+// See https://docs.pmnd.rs/zustand/integrations/persisting-store-data#how-can-i-rehydrate-on-storage-event
+type StoreWithPersist = Mutate<
+  StoreApi<SettingsState>,
+  [["zustand/persist", unknown]]
+>;
+
+const withStorageDOMEvents = (store: StoreWithPersist) => {
+  const storageEventCallback = (e: StorageEvent) => {
+    if (e.key === store.persist.getOptions().name && e.newValue) {
+      void store.persist.rehydrate();
+    }
+  };
+
+  window.addEventListener("storage", storageEventCallback);
+
+  return () => {
+    window.removeEventListener("storage", storageEventCallback);
+  };
+};
+
+withStorageDOMEvents(useSettingsStore as StoreWithPersist);
