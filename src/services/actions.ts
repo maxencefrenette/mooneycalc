@@ -1,4 +1,4 @@
-import { type ActionDetail, gameData, type ItemCountSchema } from "./data";
+import { type ActionDetail, gameData, type ItemCount } from "./data";
 import { itemName } from "./items";
 import { type Market } from "./market";
 import { type Settings } from "./settings";
