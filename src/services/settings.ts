@@ -6,6 +6,7 @@ import { z } from "zod";
 const SettingsSchema = z.object({
   levels: z.record(z.number()),
   equipment: z.record(z.union([z.string(), z.null()])),
+  communityBuffs: z.record(z.number()),
   market: z.object({
     inputBidAskProportion: z.number(),
     outputBidAskProportion: z.number(),
@@ -39,6 +40,13 @@ export const initialSettings: Settings = {
   ),
   equipment: Object.values(gameData.equipmentTypeDetailMap).reduce(
     (acc, equipmentType) => ({ ...acc, [equipmentType.hrid]: null }),
+    {},
+  ),
+  communityBuffs: Object.values(gameData.communityBuffTypeDetailMap).reduce(
+    (acc, communityBuffType) => ({
+      ...acc,
+      [communityBuffType.hrid]: 0,
+    }),
     {},
   ),
   market: {
@@ -80,6 +88,10 @@ function mergeStates(
       equipment: strictMergeRecords(
         currentState.settings.equipment,
         persistedState.settings?.equipment ?? {},
+      ),
+      communityBuffs: strictMergeRecords(
+        currentState.settings.communityBuffs,
+        persistedState.settings?.communityBuffs ?? {},
       ),
       market: {
         inputBidAskProportion:

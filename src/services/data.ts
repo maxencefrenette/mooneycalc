@@ -108,12 +108,32 @@ export const ActionTypeDetailSchema = z.object({
 });
 export type ActionTypeDetail = z.infer<typeof ActionTypeDetailSchema>;
 
+const CommunityBuffTypeDetailSchema = z.object({
+  hrid: z.string(),
+  name: z.string(),
+  usableInActionTypeMap: z.record(z.boolean()),
+  buff: z.object({
+    uniqueHrid: z.string(),
+    typeHrid: z.string(),
+    ratioBoost: z.number(),
+    ratioBoostLevelBonus: z.number(),
+    flatBoost: z.number(),
+    flatBoostLevelBonus: z.number(),
+    startTime: z.string(),
+    duration: z.number(),
+  }),
+  description: z.string(),
+  cowbellCost: z.number(),
+  sortIndex: z.number(),
+});
+
 const GameDataSchema = z.object({
   equipmentTypeDetailMap: z.record(EquipmentTypeDetailSchema),
   itemDetailMap: z.record(ItemDetailSchema),
   skillDetailMap: z.record(SkillDetailSchema),
   actionDetailMap: z.record(ActionDetailSchema),
   actionTypeDetailMap: z.record(ActionTypeDetailSchema),
+  communityBuffTypeDetailMap: z.record(CommunityBuffTypeDetailSchema),
 });
 
 export type GameData = z.infer<typeof GameDataSchema>;

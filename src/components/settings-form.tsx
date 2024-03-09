@@ -21,6 +21,7 @@ import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Checkbox } from "./ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { gameData } from "~/services/data";
 
 export interface SettingsFormProps {
   settings: Settings;
@@ -47,6 +48,7 @@ export function SettingsForm({ settings, updateSettings }: SettingsFormProps) {
       <TabsList>
         <TabsTrigger value="levels">Levels</TabsTrigger>
         <TabsTrigger value="skilling-equipment">Skilling Equipment</TabsTrigger>
+        <TabsTrigger value="community-buffs">Community Buffs</TabsTrigger>
         <TabsTrigger value="market">Market</TabsTrigger>
         <TabsTrigger value="filters">Filters</TabsTrigger>
       </TabsList>
@@ -147,6 +149,53 @@ export function SettingsForm({ settings, updateSettings }: SettingsFormProps) {
                   </div>
                 );
               })}
+            </div>
+          </CardContent>
+        </Card>
+      </TabsContent>
+      <TabsContent value="community-buffs">
+        <Card>
+          <CardHeader>
+            <CardTitle>Community Buffs</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-flow-row grid-cols-[repeat(auto-fit,minmax(160px,_1fr))] gap-4">
+              {Object.values(gameData.communityBuffTypeDetailMap).map(
+                (communityBuffType) => {
+                  const selectedLevel =
+                    settings.communityBuffs[communityBuffType.hrid]!;
+
+                  return (
+                    <div
+                      key={communityBuffType.hrid}
+                      className="grid items-center gap-1.5"
+                    >
+                      <Label htmlFor={communityBuffType.hrid}>
+                        {communityBuffType.name}
+                      </Label>
+                      <Input
+                        type="number"
+                        id={communityBuffType.hrid}
+                        min={0}
+                        max={20}
+                        value={selectedLevel}
+                        onChange={(e) =>
+                          updateSettings({
+                            ...settings,
+                            communityBuffs: {
+                              ...settings.communityBuffs,
+                              [communityBuffType.hrid]: parseInt(
+                                e.target.value,
+                                10,
+                              ),
+                            },
+                          })
+                        }
+                      />
+                    </div>
+                  );
+                },
+              )}
             </div>
           </CardContent>
         </Card>
