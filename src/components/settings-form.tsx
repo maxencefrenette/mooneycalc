@@ -12,7 +12,11 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { equipmentTypes } from "~/services/equipment-types";
-import { itemName, itemsByEquipmentType } from "~/services/items";
+import {
+  isSkillingEquipment,
+  itemName,
+  itemsByEquipmentType,
+} from "~/services/items";
 import { BidAskSlider } from "./bid-ask-slider";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Checkbox } from "./ui/checkbox";
@@ -72,7 +76,11 @@ export function SettingsForm({ settings, updateSettings }: SettingsFormProps) {
       <h1 className="pb-4 text-xl">Skilling Equipment</h1>
       <div className="flex flex-wrap gap-4">
         {equipmentTypes.map(({ hrid, name }) => {
-          const equipment = settings.equipment[hrid]!;
+          const selectedEquipment = settings.equipment[hrid]!;
+
+          // Filter out items that provide no non-combat bonuses
+          const equipmentOptions =
+            itemsByEquipmentType(hrid).filter(isSkillingEquipment);
 
           return (
             <div
@@ -85,29 +93,26 @@ export function SettingsForm({ settings, updateSettings }: SettingsFormProps) {
                   <Input
                     type="text"
                     id={hrid}
-                    value={itemName(equipment) ?? ""}
+                    value={itemName(selectedEquipment) ?? ""}
                     readOnly
                     className="cursor-pointer"
                   />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuLabel>Select {name}</DropdownMenuLabel>
-                  {equipment ? (
-                    <DropdownMenuItem
-                      onClick={() =>
-                        updateSettings({
-                          ...settings,
-                          equipment: {
-                            ...settings.equipment,
-                            [hrid]: null,
-                          },
-                        })
-                      }
-                    >
-                      None
-                    </DropdownMenuItem>
-                  ) : null}
-                  {itemsByEquipmentType(hrid).map(
+                  <DropdownMenuItem
+                    onClick={() =>
+                      updateSettings({
+                        ...settings,
+                        equipment: {
+                          ...settings.equipment,
+                          [hrid]: null,
+                        },
+                      })
+                    }
+                  >
+                    None
+                  </DropdownMenuItem>
+                  {equipmentOptions.map(
                     ({ hrid: itemHrid, name: itemName }) => (
                       <DropdownMenuItem
                         key={itemHrid}
