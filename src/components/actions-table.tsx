@@ -4,9 +4,10 @@ import { DataTable } from "~/components/ui/data-table";
 import { useSettingsStore } from "~/services/settings";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "./ui/data-table-column-header";
-import { type Market } from "~/services/market";
+import { useMarket } from "~/services/market";
 import { itemName } from "~/services/items";
 import { skillName } from "~/services/skills";
+import ItemDetail from "./item-detail";
 
 const columnHelper = createColumnHelper<ComputedAction>();
 
@@ -75,7 +76,7 @@ export const columns: ColumnDef<ComputedAction>[] = [
               {output.count.toLocaleString(undefined, {
                 maximumFractionDigits: 2,
               })}{" "}
-              x {itemName(output.itemHrid)}
+              x <ItemDetail hrid={output.itemHrid} />
             </div>
           ))}
         </>
@@ -132,19 +133,9 @@ export const columns: ColumnDef<ComputedAction>[] = [
   },
 ];
 
-export interface CalculationPageProps {
-  currentMarket: Market;
-  medianMarket: Market;
-}
-
-export function ActionsDataTable({
-  currentMarket,
-  medianMarket,
-}: CalculationPageProps) {
+export function ActionsDataTable() {
   const settings = useSettingsStore((state) => state.settings);
-  const market =
-    settings.market.pricePeriod === "latest" ? currentMarket : medianMarket;
-
+  const market = useMarket();
   const actions = getActions(settings, market);
 
   return (

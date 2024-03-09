@@ -1,23 +1,23 @@
-import { z } from "zod";
+import { createContext, useContext } from "react";
+import { useSettingsStore } from "./settings";
+import { type Market } from "./market-fetch";
 
-const MarketEntrySchema = z.object({
-  bid: z.number(),
-  ask: z.number(),
-});
-export type MarketEntry = z.infer<typeof MarketEntrySchema>;
+export interface Markets {
+  current: Market;
+  median: Market;
+}
 
-const MarketSchema = z.object({
-  market: z.record(MarketEntrySchema),
-  time: z.number(),
-});
-export type Market = z.infer<typeof MarketSchema>;
+export const MarketContext = createContext<Markets | null>(null);
 
-export async function fetchMarket(name: string): Promise<Market> {
-  const response = await fetch(
-    `https://raw.githubusercontent.com/holychikenz/MWIApi/main/${name}`,
-    { next: { revalidate: 60 } },
+export function useMarket() {
+  const markets = useContext(MarketContext);
+  const pricePeriod = useSettingsStore(
+    (state) => state.settings.market.pricePeriod,
   );
 
-  const data: unknown = await response.json();
-  return MarketSchema.parse(data);
+  if (!markets) {
+    throw new Error("Market context not found");
+  }
+
+  return pricePeriod === "latest" ? markets.current : markets.median;
 }
