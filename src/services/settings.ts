@@ -24,7 +24,7 @@ export const initialSettings: Settings = {
   ),
   market: {
     inputBidAskProportion: 0.0,
-    outputBidAskProportion: 1.0,
+    outputBidAskProportion: 0.0,
     pricePeriod: "latest",
   },
   filters: {
