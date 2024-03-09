@@ -1,113 +1,120 @@
 import rawGameData from "~/data/init_client_info.json";
+import { z } from "zod";
 
-interface GameData {
-  equipmentTypeDetailMap: Record<string, EquipmentTypeDetail>;
-  itemDetailMap: Record<string, ItemDetail>;
-  skillDetailMap: Record<string, SkillDetail>;
-  actionDetailMap: Record<string, ActionDetail>;
-  actionTypeDetailMap: Record<string, ActionTypeDetail>;
-}
+export const EquipmentTypeDetailSchema = z.object({
+  hrid: z.string(),
+  name: z.string(),
+  itemLocationHrid: z.string(),
+  sortIndex: z.number(),
+});
+export type EquipmentTypeDetail = z.infer<typeof EquipmentTypeDetailSchema>;
 
-export interface EquipmentTypeDetail {
-  hrid: string;
-  name: string;
-  itemLocationHrid: string;
-  sortIndex: number;
-}
+export const ItemDetailSchema = z.object({
+  hrid: z.string(),
+  name: z.string(),
+  description: z.string(),
+  categoryHrid: z.string(),
+  sellPrice: z.number(),
+  isTradable: z.boolean(),
+  isOpenable: z.boolean(),
+  itemLevel: z.number(),
+  enhancementCosts: z.unknown(), // TODO
+  protectionItemHrids: z.unknown(), // TODO
+  equipmentDetail: z.object({
+    type: z.string(),
+    combatStats: z.unknown(), // TODO
+    noncombatStats: z.object({
+      milkingSpeed: z.number(),
+      foragingSpeed: z.number(),
+      woodcuttingSpeed: z.number(),
+      cheesesmithingSpeed: z.number(),
+      craftingSpeed: z.number(),
+      tailoringSpeed: z.number(),
+      cookingSpeed: z.number(),
+      brewingSpeed: z.number(),
+      enhancingSpeed: z.number(),
+      taskSpeed: z.number(),
+      milkingEfficiency: z.number(),
+      foragingEfficiency: z.number(),
+      woodcuttingEfficiency: z.number(),
+      cheesesmithingEfficiency: z.number(),
+      craftingEfficiency: z.number(),
+      tailoringEfficiency: z.number(),
+      cookingEfficiency: z.number(),
+      brewingEfficiency: z.number(),
+      skillingEfficiency: z.number(),
+      enhancingSuccess: z.number(),
+      gatheringQuantity: z.number(),
+      skillingRareFind: z.number(),
+      skillingExperience: z.number(),
+    }),
+  }),
+  consumableDetail: z.unknown(), // TODO
+  abilityBookDetail: z.unknown(), // TODO
+  sortIndex: z.number(),
+});
+export type ItemDetail = z.infer<typeof ItemDetailSchema>;
 
-export interface ItemDetail {
-  hrid: string;
-  name: string;
-  description: string;
-  categoryHrid: string;
-  sellPrice: number;
-  isTradable: boolean;
-  isOpenable: boolean;
-  itemLevel: number;
-  enhancementCosts: unknown; // TODO
-  protectionItemHrids: unknown; // TODO
-  equipmentDetail: {
-    type: string;
-    combatStats: unknown; // TODO
-    noncombatStats: {
-      milkingSpeed: number;
-      foragingSpeed: number;
-      woodcuttingSpeed: number;
-      cheesesmithingSpeed: number;
-      craftingSpeed: number;
-      tailoringSpeed: number;
-      cookingSpeed: number;
-      brewingSpeed: number;
-      enhancingSpeed: number;
-      taskSpeed: number;
-      milkingEfficiency: number;
-      foragingEfficiency: number;
-      woodcuttingEfficiency: number;
-      cheesesmithingEfficiency: number;
-      craftingEfficiency: number;
-      tailoringEfficiency: number;
-      cookingEfficiency: number;
-      brewingEfficiency: number;
-      skillingEfficiency: number;
-      enhancingSuccess: number;
-      gatheringQuantity: number;
-      skillingRareFind: number;
-      skillingExperience: number;
-    };
-  };
-  consumableDetail: unknown; // TODO
-  abilityBookDetail: unknown; // TODO
-  sortIndex: number;
-}
+export const SkillDetailSchema = z.object({
+  hrid: z.string(),
+  name: z.string(),
+  sortIndex: z.number(),
+});
+export type SkillDetail = z.infer<typeof SkillDetailSchema>;
 
-export interface SkillDetail {
-  hrid: string;
-  name: string;
-  sortIndex: number;
-}
+export const DropTableEntrySchema = z.object({
+  itemHrid: z.string(),
+  dropRate: z.number(),
+  minCount: z.number(),
+  maxCount: z.number(),
+});
+export type DropTableEntry = z.infer<typeof DropTableEntrySchema>;
 
-export interface ActionDetail {
-  hrid: string;
-  function: string;
-  type: string;
-  category: string;
-  name: string;
-  levelRequirement: {
-    skillHrid: string;
-    level: number;
-  };
-  baseTimeCost: number;
-  experienceGain: {
-    skillHrid: string;
-    value: number;
-  };
-  dropTable: DropTableEntry[] | null;
-  rareDropTable: DropTableEntry[] | null;
-  upgradeItemHrid: string;
-  inputItems: ItemCount[] | null;
-  outputItems: ItemCount[] | null;
-  monsterSpawnInfo: unknown;
-  sortIndex: number;
-}
+export const ItemCountSchema = z.object({
+  itemHrid: z.string(),
+  count: z.number(),
+});
+export type ItemCount = z.infer<typeof ItemCountSchema>;
 
-export interface DropTableEntry {
-  itemHrid: string;
-  dropRate: number;
-  minCount: number;
-  maxCount: number;
-}
+export const ActionDetailSchema = z.object({
+  hrid: z.string(),
+  function: z.string(),
+  type: z.string(),
+  category: z.string(),
+  name: z.string(),
+  levelRequirement: z.object({
+    skillHrid: z.string(),
+    level: z.number(),
+  }),
+  baseTimeCost: z.number(),
+  experienceGain: z.object({
+    skillHrid: z.string(),
+    value: z.number(),
+  }),
+  dropTable: z.array(DropTableEntrySchema).nullable(),
+  rareDropTable: z.array(DropTableEntrySchema).nullable(),
+  upgradeItemHrid: z.string(),
+  inputItems: z.array(ItemCountSchema).nullable(),
+  outputItems: z.array(ItemCountSchema).nullable(),
+  monsterSpawnInfo: z.unknown(),
+  sortIndex: z.number(),
+});
+export type ActionDetail = z.infer<typeof ActionDetailSchema>;
 
-export interface ItemCount {
-  itemHrid: string;
-  count: number;
-}
+export const ActionTypeDetailSchema = z.object({
+  hrid: z.string(),
+  name: z.string(),
+  sortIndex: z.number(),
+});
+export type ActionTypeDetail = z.infer<typeof ActionTypeDetailSchema>;
 
-export interface ActionTypeDetail {
-  hrid: string;
-  name: string;
-  sortIndex: number;
-}
+const GameDataSchema = z.object({
+  equipmentTypeDetailMap: z.record(EquipmentTypeDetailSchema),
+  itemDetailMap: z.record(ItemDetailSchema),
+  skillDetailMap: z.record(SkillDetailSchema),
+  actionDetailMap: z.record(ActionDetailSchema),
+  actionTypeDetailMap: z.record(ActionTypeDetailSchema),
+});
 
-// There is probably a cleaner way to type this
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
-export const gameData: GameData = rawGameData as any;
+export type GameData = z.infer<typeof GameDataSchema>;
+export const gameData = GameDataSchema.parse(rawGameData);
