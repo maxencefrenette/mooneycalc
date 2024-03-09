@@ -21,7 +21,7 @@ export interface ItemDetail {
   description: string;
   categoryHrid: string;
   sellPrice: number;
-  isTradeable: boolean;
+  isTradable: boolean;
   isOpenable: boolean;
   itemLevel: number;
   enhancementCosts: unknown; // TODO

@@ -200,6 +200,25 @@ export function getActions(settings: Settings, market: Market) {
       a.type !== "/action_types/combat" && a.type !== "/action_types/enhancing",
   );
 
+  // Filter out actions that involve untradable items
+  actions = actions.filter((a) => {
+    if (a.inputItems) {
+      for (const input of a.inputItems) {
+        if (gameData.itemDetailMap[input.itemHrid]!.isTradable === false) {
+          return false;
+        }
+      }
+    }
+    if (a.outputItems) {
+      for (const output of a.outputItems) {
+        if (gameData.itemDetailMap[output.itemHrid]!.isTradable === false) {
+          return false;
+        }
+      }
+    }
+    return true;
+  });
+
   // Filter out actions with unmet level requirements
   if (settings.filters.hideUnmetLevelRequirements) {
     actions = actions.filter((a) => {
