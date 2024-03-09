@@ -1,3 +1,4 @@
+import { communityBuffs } from "./community-buffs";
 import { type ActionDetail, gameData, type ItemCount } from "./data";
 import { itemName } from "./items";
 import { type Market } from "./market";
@@ -87,6 +88,26 @@ function getToolBonuses(skillHrid: string, settings: Settings) {
   return { speed, efficiency };
 }
 
+function getCommunityBuffBonuses(actionType: string, settings: Settings) {
+  let efficiency = 0;
+
+  for (const buff of communityBuffs) {
+    const level = settings.communityBuffs[buff.hrid]!;
+
+    if (level === 0) continue;
+    if (buff.usableInActionTypeMap[actionType] !== true) continue;
+
+    const buffValue =
+      buff.buff.flatBoost + buff.buff.flatBoostLevelBonus * (level - 1);
+
+    if (buff.buff.typeHrid === "/buff_types/efficiency") {
+      efficiency += buffValue;
+    }
+  }
+
+  return { efficiency };
+}
+
 function computeSingleAction(
   action: ActionDetail,
   settings: Settings,
@@ -112,6 +133,12 @@ function computeSingleAction(
     settings,
   );
 
+  // Compute community buff bonuses
+  const { efficiency: communityEfficiency } = getCommunityBuffBonuses(
+    action.type,
+    settings,
+  );
+
   // Compute level efficiency
   const level = settings.levels[action.levelRequirement.skillHrid]!;
   const levelsAboveRequirement = Math.max(
@@ -123,7 +150,7 @@ function computeSingleAction(
   // Compute actions per hour
   const baseActionsPerHour = 3600_000_000_000 / action.baseTimeCost;
   const speed = 1 + toolSpeed;
-  const efficiency = 1 + toolEfficiency + levelEfficiency;
+  const efficiency = 1 + toolEfficiency + communityEfficiency + levelEfficiency;
   const actionsPerHour = baseActionsPerHour * speed * efficiency;
 
   // Compute stats per action
