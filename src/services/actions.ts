@@ -144,10 +144,9 @@ function computeSingleAction(
       bid: -1,
       ask: -1,
     };
-    if (ask === -1 || bid === -1) return 2;
+    if (ask === -1 || bid === -1) return 1;
 
-    const midpoint = (bid + ask) / 2;
-    return (ask - bid) / midpoint;
+    return (ask - bid) / ask;
   });
   const outputMaxBidAskSpread = Math.max(...outputBidAskSpreads);
 
