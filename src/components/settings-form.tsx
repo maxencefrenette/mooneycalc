@@ -20,6 +20,7 @@ import { BidAskSlider } from "./bid-ask-slider";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Checkbox } from "./ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 export interface SettingsFormProps {
   settings: Settings;
@@ -49,184 +50,204 @@ export function SettingsForm({ settings, updateSettings }: SettingsFormProps) {
         <TabsTrigger value="market">Market</TabsTrigger>
         <TabsTrigger value="filters">Filters</TabsTrigger>
       </TabsList>
-      <div className="h-8"></div>
+      <div className="h-4"></div>
       <TabsContent value="levels">
-        <div className="flex flex-wrap gap-4">
-          {skillingSkills.map(({ hrid, name }) => {
-            const level = settings.levels[hrid]!;
+        <Card>
+          <CardHeader>
+            <CardTitle>Levels</CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-flow-row grid-cols-[repeat(auto-fit,minmax(160px,_1fr))] gap-4">
+            {skillingSkills.map(({ hrid, name }) => {
+              const level = settings.levels[hrid]!;
 
-            return (
-              <div
-                key={hrid}
-                className="grid w-full max-w-xs items-center gap-1.5"
-              >
-                <Label htmlFor={hrid}>{name}</Label>
-                <Input
-                  type="number"
-                  id={hrid}
-                  value={level}
-                  onChange={(e) =>
-                    updateSettings({
-                      ...settings,
-                      levels: {
-                        ...settings.levels,
-                        [hrid]: parseInt(e.target.value, 10),
-                      },
-                    })
-                  }
-                />
-              </div>
-            );
-          })}
-        </div>
+              return (
+                <div key={hrid} className="grid items-center gap-1.5">
+                  <Label htmlFor={hrid}>{name}</Label>
+                  <Input
+                    type="number"
+                    id={hrid}
+                    value={level}
+                    onChange={(e) =>
+                      updateSettings({
+                        ...settings,
+                        levels: {
+                          ...settings.levels,
+                          [hrid]: parseInt(e.target.value, 10),
+                        },
+                      })
+                    }
+                  />
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
       </TabsContent>
       <TabsContent value="skilling-equipment">
-        <div className="flex flex-wrap gap-4">
-          {equipmentTypes.map(({ hrid, name }) => {
-            const selectedEquipment = settings.equipment[hrid]!;
+        <Card>
+          <CardHeader>
+            <CardTitle>Skilling Equipment</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-flow-row grid-cols-[repeat(auto-fit,minmax(160px,_1fr))] gap-4">
+              {equipmentTypes.map(({ hrid, name }) => {
+                const selectedEquipment = settings.equipment[hrid]!;
 
-            // Filter out items that provide no non-combat bonuses
-            const equipmentOptions =
-              itemsByEquipmentType(hrid).filter(isSkillingEquipment);
+                // Filter out items that provide no non-combat bonuses
+                const equipmentOptions =
+                  itemsByEquipmentType(hrid).filter(isSkillingEquipment);
 
-            return (
-              <div
-                key={hrid}
-                className="grid w-full max-w-xs items-center gap-1.5"
-              >
-                <Label htmlFor={hrid}>{name}</Label>
-                <DropdownMenu>
-                  <DropdownMenuTrigger>
-                    <Input
-                      type="text"
-                      id={hrid}
-                      value={itemName(selectedEquipment) ?? ""}
-                      readOnly
-                      className="cursor-pointer"
-                    />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem
-                      onClick={() =>
-                        updateSettings({
-                          ...settings,
-                          equipment: {
-                            ...settings.equipment,
-                            [hrid]: null,
-                          },
-                        })
-                      }
-                    >
-                      None
-                    </DropdownMenuItem>
-                    {equipmentOptions.map(
-                      ({ hrid: itemHrid, name: itemName }) => (
+                return (
+                  <div key={hrid} className="grid items-center gap-1.5">
+                    <Label htmlFor={hrid}>{name}</Label>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger>
+                        <Input
+                          type="text"
+                          id={hrid}
+                          value={itemName(selectedEquipment) ?? ""}
+                          readOnly
+                          className="cursor-pointer"
+                        />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
                         <DropdownMenuItem
-                          key={itemHrid}
                           onClick={() =>
                             updateSettings({
                               ...settings,
                               equipment: {
                                 ...settings.equipment,
-                                [hrid]: itemHrid,
+                                [hrid]: null,
                               },
                             })
                           }
                         >
-                          {itemName}
+                          None
                         </DropdownMenuItem>
-                      ),
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            );
-          })}
-        </div>
+                        {equipmentOptions.map(
+                          ({ hrid: itemHrid, name: itemName }) => (
+                            <DropdownMenuItem
+                              key={itemHrid}
+                              onClick={() =>
+                                updateSettings({
+                                  ...settings,
+                                  equipment: {
+                                    ...settings.equipment,
+                                    [hrid]: itemHrid,
+                                  },
+                                })
+                              }
+                            >
+                              {itemName}
+                            </DropdownMenuItem>
+                          ),
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
       </TabsContent>
       <TabsContent value="market">
-        <div className="flex justify-around">
-          <BidAskSlider
-            label="Input Item Prices"
-            inverted={true}
-            value={settings.market.inputBidAskProportion}
-            updateValue={(value) =>
-              updateSettings({
-                ...settings,
-                market: {
-                  ...settings.market,
-                  inputBidAskProportion: value,
-                },
-              })
-            }
-          />
-          <BidAskSlider
-            label="Output Item Prices"
-            inverted={false}
-            value={settings.market.outputBidAskProportion}
-            updateValue={(value) =>
-              updateSettings({
-                ...settings,
-                market: {
-                  ...settings.market,
-                  outputBidAskProportion: value,
-                },
-              })
-            }
-          />
-          <RadioGroup
-            value={settings.market.pricePeriod}
-            onValueChange={(value) => {
-              if (value !== "latest" && value !== "median") {
-                return;
-              }
+        <Card>
+          <CardHeader>
+            <CardTitle>Market</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex justify-around">
+              <BidAskSlider
+                label="Input Item Prices"
+                inverted={true}
+                value={settings.market.inputBidAskProportion}
+                updateValue={(value) =>
+                  updateSettings({
+                    ...settings,
+                    market: {
+                      ...settings.market,
+                      inputBidAskProportion: value,
+                    },
+                  })
+                }
+              />
+              <BidAskSlider
+                label="Output Item Prices"
+                inverted={false}
+                value={settings.market.outputBidAskProportion}
+                updateValue={(value) =>
+                  updateSettings({
+                    ...settings,
+                    market: {
+                      ...settings.market,
+                      outputBidAskProportion: value,
+                    },
+                  })
+                }
+              />
+              <RadioGroup
+                value={settings.market.pricePeriod}
+                onValueChange={(value) => {
+                  if (value !== "latest" && value !== "median") {
+                    return;
+                  }
 
-              return updateSettings({
-                ...settings,
-                market: {
-                  ...settings.market,
-                  pricePeriod: value,
-                },
-              });
-            }}
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="latest" id="latest" />
-              <Label htmlFor="latest">Latest Prices</Label>
+                  return updateSettings({
+                    ...settings,
+                    market: {
+                      ...settings.market,
+                      pricePeriod: value,
+                    },
+                  });
+                }}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="latest" id="latest" />
+                  <Label htmlFor="latest">Latest Prices</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="median" id="median" />
+                  <Label htmlFor="median">24h Median Prices</Label>
+                </div>
+              </RadioGroup>
             </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="median" id="median" />
-              <Label htmlFor="median">24h Median Prices</Label>
-            </div>
-          </RadioGroup>
-        </div>
+          </CardContent>
+        </Card>
       </TabsContent>
       <TabsContent value="filters">
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="hide-unmet-level-requirements"
-            checked={settings?.filters?.hideUnmetLevelRequirements ?? true}
-            onCheckedChange={(checked) => {
-              if (checked === "indeterminate") {
-                return;
-              }
+        <Card>
+          <CardHeader>
+            <CardTitle>Filters</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="hide-unmet-level-requirements"
+                checked={settings?.filters?.hideUnmetLevelRequirements ?? true}
+                onCheckedChange={(checked) => {
+                  if (checked === "indeterminate") {
+                    return;
+                  }
 
-              return updateSettings({
-                ...settings,
-                filters: {
-                  ...settings.filters,
-                  hideUnmetLevelRequirements: checked,
-                },
-              });
-            }}
-          />
-          <Label
-            htmlFor="hide-unmet-level-requirements"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            Hide actions with unmet level requirements
-          </Label>
-        </div>
+                  return updateSettings({
+                    ...settings,
+                    filters: {
+                      ...settings.filters,
+                      hideUnmetLevelRequirements: checked,
+                    },
+                  });
+                }}
+              />
+              <Label
+                htmlFor="hide-unmet-level-requirements"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Hide actions with unmet level requirements
+              </Label>
+            </div>
+          </CardContent>
+        </Card>
       </TabsContent>
     </Tabs>
   );

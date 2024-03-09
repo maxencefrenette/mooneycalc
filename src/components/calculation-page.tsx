@@ -155,7 +155,7 @@ export function CalculationPage({
 
   return (
     <main className="flex min-h-screen">
-      <div className="container flex flex-col gap-12 py-12">
+      <div className="container flex flex-col gap-6 py-12">
         <SettingsForm settings={settings} updateSettings={updateSettings} />
         <DataTable
           columns={columns}
