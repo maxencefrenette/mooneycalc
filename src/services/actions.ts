@@ -19,6 +19,7 @@ export interface ComputedAction {
   inputsPrice: number;
   outputs: ItemCount[];
   outputsPrice: number;
+  outputMaxBidAskSpread: number;
   actionsPerHour: number;
   profit: number;
 }
@@ -117,7 +118,7 @@ function computeSingleAction(
   const efficiency = 1 + toolEfficiency + levelEfficiency;
   const actionsPerHour = baseActionsPerHour * speed * efficiency;
 
-  // Compute profits
+  // Compute stats per action
   const revenue = outputs.reduce((sum, output) => {
     if (output.itemHrid === "/items/coin")
       return sum + output.count * actionsPerHour;
@@ -137,6 +138,19 @@ function computeSingleAction(
 
     return sum + price * output.count;
   }, 0);
+
+  const outputBidAskSpreads = outputs.map((output) => {
+    const { bid, ask } = market.market[itemName(output.itemHrid)] ?? {
+      bid: -1,
+      ask: -1,
+    };
+    if (ask === -1 || bid === -1) return 2;
+
+    const midpoint = (bid + ask) / 2;
+    return (ask - bid) / midpoint;
+  });
+  const outputMaxBidAskSpread = Math.max(...outputBidAskSpreads);
+
   const cost = inputs.reduce((sum, input) => {
     if (input.itemHrid === "/items/coin")
       return sum + input.count * actionsPerHour;
@@ -164,6 +178,7 @@ function computeSingleAction(
     inputsPrice: cost,
     outputs,
     outputsPrice: revenue,
+    outputMaxBidAskSpread,
     actionsPerHour,
     profit,
   };

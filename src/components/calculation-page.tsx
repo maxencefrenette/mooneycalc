@@ -98,6 +98,19 @@ export const columns: ColumnDef<ComputedAction>[] = [
     ),
   },
   {
+    accessorKey: "outputMaxBidAskSpread",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Output spread" />
+    ),
+    cell: ({ row }) => (
+      <div className="max-w-28 text-right">
+        {(row.original.outputMaxBidAskSpread * 100).toLocaleString(undefined, {
+          maximumSignificantDigits: 2,
+        }) + "%"}
+      </div>
+    ),
+  },
+  {
     accessorKey: "actionsPerHour",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Actions/h" />
