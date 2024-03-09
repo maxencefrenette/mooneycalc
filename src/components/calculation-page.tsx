@@ -87,7 +87,9 @@ export const columns: ColumnDef<ComputedAction>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Actions/h" />
     ),
-    cell: ({ row }) => row.original.actionsPerHour.toFixed(0),
+    cell: ({ row }) => (
+      <div className="text-right">{row.original.actionsPerHour.toFixed(0)}</div>
+    ),
   },
   {
     accessorKey: "profit",
