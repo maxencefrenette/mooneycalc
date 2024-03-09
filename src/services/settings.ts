@@ -1,4 +1,5 @@
 import { gameData } from "./data";
+import { create } from "zustand";
 
 export interface Settings {
   levels: Record<string, number>;
@@ -11,6 +12,11 @@ export interface Settings {
   filters: {
     hideUnmetLevelRequirements: boolean;
   };
+}
+
+export interface SettingsState {
+  settings: Settings;
+  updateSettings: (newSettings: Settings) => void;
 }
 
 export const initialSettings: Settings = {
@@ -31,3 +37,8 @@ export const initialSettings: Settings = {
     hideUnmetLevelRequirements: true,
   },
 };
+
+export const useSettingsStore = create<SettingsState>()((set) => ({
+  settings: initialSettings,
+  updateSettings: (newSettings) => set({ settings: newSettings }),
+}));

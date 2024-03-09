@@ -2,11 +2,10 @@
 import { type ComputedAction, getActions } from "~/services/actions";
 import { DataTable } from "~/components/ui/data-table";
 import { SettingsForm } from "./settings-form";
-import { initialSettings, type Settings } from "~/services/settings";
+import { useSettingsStore } from "~/services/settings";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "./ui/data-table-column-header";
 import { type Market } from "~/services/market";
-import { useLocalStorage } from "@uidotdev/usehooks";
 import { itemName } from "~/services/items";
 import { skillName } from "~/services/skills";
 
@@ -143,10 +142,8 @@ export function CalculationPage({
   currentMarket,
   medianMarket,
 }: CalculationPageProps) {
-  const [settings, updateSettings] = useLocalStorage<Settings>(
-    "player_stats",
-    initialSettings,
-  );
+  const settings = useSettingsStore((state) => state.settings);
+  const updateSettings = useSettingsStore((state) => state.updateSettings);
 
   const market =
     settings.market.pricePeriod === "latest" ? currentMarket : medianMarket;
