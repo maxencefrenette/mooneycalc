@@ -108,20 +108,35 @@ export const ActionTypeDetailSchema = z.object({
 });
 export type ActionTypeDetail = z.infer<typeof ActionTypeDetailSchema>;
 
+export const BuffSchema = z.object({
+  uniqueHrid: z.string(),
+  typeHrid: z.string(),
+  ratioBoost: z.number(),
+  ratioBoostLevelBonus: z.number(),
+  flatBoost: z.number(),
+  flatBoostLevelBonus: z.number(),
+  startTime: z.string(),
+  duration: z.number(),
+});
+export type Buff = z.infer<typeof BuffSchema>;
+
+const HouseRoomDetailSchema = z.object({
+  hrid: z.string(),
+  name: z.string(),
+  skillHrid: z.string(),
+  usableInActionTypeMap: z.record(z.boolean()),
+  actionBuffs: z.array(BuffSchema),
+  globalBuffs: z.array(BuffSchema),
+  upgradeCostsMap: z.record(z.array(ItemCountSchema)),
+  sortIndex: z.number(),
+});
+export type HouseRoomDetail = z.infer<typeof HouseRoomDetailSchema>;
+
 const CommunityBuffTypeDetailSchema = z.object({
   hrid: z.string(),
   name: z.string(),
   usableInActionTypeMap: z.record(z.boolean()),
-  buff: z.object({
-    uniqueHrid: z.string(),
-    typeHrid: z.string(),
-    ratioBoost: z.number(),
-    ratioBoostLevelBonus: z.number(),
-    flatBoost: z.number(),
-    flatBoostLevelBonus: z.number(),
-    startTime: z.string(),
-    duration: z.number(),
-  }),
+  buff: BuffSchema,
   description: z.string(),
   cowbellCost: z.number(),
   sortIndex: z.number(),
@@ -133,6 +148,7 @@ const GameDataSchema = z.object({
   skillDetailMap: z.record(SkillDetailSchema),
   actionDetailMap: z.record(ActionDetailSchema),
   actionTypeDetailMap: z.record(ActionTypeDetailSchema),
+  houseRoomDetailMap: z.record(HouseRoomDetailSchema),
   communityBuffTypeDetailMap: z.record(CommunityBuffTypeDetailSchema),
 });
 

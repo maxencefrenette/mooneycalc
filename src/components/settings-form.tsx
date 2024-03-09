@@ -48,6 +48,7 @@ export function SettingsForm({ settings, updateSettings }: SettingsFormProps) {
       <TabsList>
         <TabsTrigger value="levels">Levels</TabsTrigger>
         <TabsTrigger value="skilling-equipment">Skilling Equipment</TabsTrigger>
+        <TabsTrigger value="house">House</TabsTrigger>
         <TabsTrigger value="community-buffs">Community Buffs</TabsTrigger>
         <TabsTrigger value="market">Market</TabsTrigger>
         <TabsTrigger value="filters">Filters</TabsTrigger>
@@ -146,6 +147,45 @@ export function SettingsForm({ settings, updateSettings }: SettingsFormProps) {
                         )}
                       </DropdownMenuContent>
                     </DropdownMenu>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      </TabsContent>
+      <TabsContent value="house">
+        <Card>
+          <CardHeader>
+            <CardTitle>House</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-flow-row grid-cols-[repeat(auto-fit,minmax(160px,_1fr))] gap-4">
+              {Object.values(gameData.houseRoomDetailMap).map((houseRoom) => {
+                const selectedLevel = settings.houseRooms[houseRoom.hrid]!;
+
+                return (
+                  <div
+                    key={houseRoom.hrid}
+                    className="grid items-center gap-1.5"
+                  >
+                    <Label htmlFor={houseRoom.hrid}>{houseRoom.name}</Label>
+                    <Input
+                      type="number"
+                      id={houseRoom.hrid}
+                      min={0}
+                      max={8}
+                      value={selectedLevel}
+                      onChange={(e) =>
+                        updateSettings({
+                          ...settings,
+                          houseRooms: {
+                            ...settings.houseRooms,
+                            [houseRoom.hrid]: parseInt(e.target.value, 10),
+                          },
+                        })
+                      }
+                    />
                   </div>
                 );
               })}

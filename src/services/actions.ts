@@ -1,5 +1,6 @@
 import { communityBuffs } from "./community-buffs";
 import { type ActionDetail, gameData, type ItemCount } from "./data";
+import { houseRooms } from "./house-rooms";
 import { itemName } from "./items";
 import { type Market } from "./market";
 import { type Settings } from "./settings";
@@ -88,6 +89,29 @@ function getToolBonuses(skillHrid: string, settings: Settings) {
   return { speed, efficiency };
 }
 
+function getHouseBonuses(actionType: string, settings: Settings) {
+  let efficiency = 0;
+  let speed = 0;
+
+  for (const houseRoom of houseRooms) {
+    const level = settings.houseRooms[houseRoom.hrid]!;
+
+    if (level === 0) continue;
+    if (houseRoom.usableInActionTypeMap[actionType] !== true) continue;
+
+    for (const buff of [...houseRoom.actionBuffs, ...houseRoom.globalBuffs]) {
+      if (buff.typeHrid === "/buff_types/efficiency") {
+        efficiency += buff.flatBoost + buff.flatBoostLevelBonus * (level - 1);
+      }
+      if (buff.typeHrid === "/buff_types/speed") {
+        speed += buff.flatBoost + buff.flatBoostLevelBonus * (level - 1);
+      }
+    }
+  }
+
+  return { efficiency, speed };
+}
+
 function getCommunityBuffBonuses(actionType: string, settings: Settings) {
   let efficiency = 0;
 
@@ -133,6 +157,12 @@ function computeSingleAction(
     settings,
   );
 
+  // Compute house bonuses
+  const { speed: houseSpeed, efficiency: houseEfficiency } = getHouseBonuses(
+    action.type,
+    settings,
+  );
+
   // Compute community buff bonuses
   const { efficiency: communityEfficiency } = getCommunityBuffBonuses(
     action.type,
@@ -149,8 +179,13 @@ function computeSingleAction(
 
   // Compute actions per hour
   const baseActionsPerHour = 3600_000_000_000 / action.baseTimeCost;
-  const speed = 1 + toolSpeed;
-  const efficiency = 1 + toolEfficiency + communityEfficiency + levelEfficiency;
+  const speed = 1 + toolSpeed + houseSpeed;
+  const efficiency =
+    1 +
+    toolEfficiency +
+    houseEfficiency +
+    communityEfficiency +
+    levelEfficiency;
   const actionsPerHour = baseActionsPerHour * speed * efficiency;
 
   // Compute stats per action
