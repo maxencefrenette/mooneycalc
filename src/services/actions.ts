@@ -13,6 +13,8 @@ const sortedActions = Object.values(gameData.actionDetailMap).sort(
 export interface ComputedAction {
   id: string;
   name: string;
+  skillHrid: string;
+  levelRequired: number;
   inputs: ItemCount[];
   inputsPrice: number;
   outputs: ItemCount[];
@@ -155,6 +157,8 @@ function computeSingleAction(
 
   return {
     id: action.hrid,
+    skillHrid: action.levelRequirement.skillHrid,
+    levelRequired: action.levelRequirement.level,
     name: action.name,
     inputs,
     inputsPrice: cost,

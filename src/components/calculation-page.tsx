@@ -8,6 +8,7 @@ import { DataTableColumnHeader } from "./ui/data-table-column-header";
 import { type Market } from "~/services/market";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { itemName } from "~/services/items";
+import { skillName } from "~/services/skills";
 
 const columnHelper = createColumnHelper<ComputedAction>();
 
@@ -17,6 +18,20 @@ export const columns: ColumnDef<ComputedAction>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Action" />
     ),
+  },
+  {
+    accessorKey: "skillHrid",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Skill" />
+    ),
+    cell: ({ row }) => <div>{skillName(row.original.skillHrid)}</div>,
+  },
+  {
+    accessorKey: "levelRequired",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Level" />
+    ),
+    cell: ({ row }) => row.original.levelRequired,
   },
   columnHelper.display({
     id: "inputs",
