@@ -1,11 +1,16 @@
-export interface Market {
-  market: Record<string, MarketEntry>;
-  time: number;
-}
-export interface MarketEntry {
-  bid: number;
-  ask: number;
-}
+import { z } from "zod";
+
+const MarketEntrySchema = z.object({
+  bid: z.number(),
+  ask: z.number(),
+});
+export type MarketEntry = z.infer<typeof MarketEntrySchema>;
+
+const MarketSchema = z.object({
+  market: z.record(MarketEntrySchema),
+  time: z.number(),
+});
+export type Market = z.infer<typeof MarketSchema>;
 
 export async function fetchMarket(name: string): Promise<Market> {
   const response = await fetch(
@@ -13,6 +18,6 @@ export async function fetchMarket(name: string): Promise<Market> {
     { next: { revalidate: 60 } },
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  return (await response.json()) as Market;
+  const data: unknown = await response.json();
+  return MarketSchema.parse(data);
 }
