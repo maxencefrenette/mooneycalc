@@ -1,10 +1,14 @@
 import { sortedActions } from "./actions";
 import {
   BUFF_TYPE_EFFICIENCY,
+  BUFF_TYPE_ENHANCING_SUCCESS,
   BUFF_TYPE_GATHERING,
-  BUFF_TYPE_SPEED,
+  BUFF_TYPE_ACTION_SPEED,
   addBonuses,
   zeroBonuses,
+  BUFF_TYPE_TASK_SPEED,
+  BUFF_TYPE_WISDOM,
+  BUFF_TYPE_RARE_FIND,
 } from "./buffs";
 import { communityBuffs } from "./community-buffs";
 import { type ActionDetail, gameData, type ItemCount } from "./data";
@@ -35,9 +39,8 @@ function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
 
-function getToolBonuses(skillHrid: string, settings: Settings) {
-  let speed = 0;
-  let efficiency = 0;
+function getToolBonuses(actionType: string, settings: Settings) {
+  const bonuses = zeroBonuses();
 
   for (const equipmentHrid of Object.values(settings.equipment)) {
     if (equipmentHrid === null) continue;
@@ -45,49 +48,52 @@ function getToolBonuses(skillHrid: string, settings: Settings) {
     const equipment = gameData.itemDetailMap[equipmentHrid]!;
     const stats = equipment.equipmentDetail.noncombatStats;
 
-    if (!stats) debugger;
+    bonuses[BUFF_TYPE_TASK_SPEED] += stats.taskSpeed;
+    bonuses[BUFF_TYPE_EFFICIENCY] += stats.skillingEfficiency;
+    bonuses[BUFF_TYPE_ENHANCING_SUCCESS] += stats.enhancingSuccess;
+    bonuses[BUFF_TYPE_GATHERING] += stats.gatheringQuantity;
+    bonuses[BUFF_TYPE_RARE_FIND] += stats.skillingRareFind;
+    bonuses[BUFF_TYPE_WISDOM] += stats.skillingExperience;
 
-    if (skillHrid === "/skills/milking") {
-      speed += stats.milkingSpeed;
-      efficiency += stats.milkingEfficiency;
+    if (actionType === "/action_types/milking") {
+      bonuses[BUFF_TYPE_ACTION_SPEED] += stats.milkingSpeed;
+      bonuses[BUFF_TYPE_EFFICIENCY] += stats.milkingEfficiency;
     }
-    if (skillHrid === "/skills/foraging") {
-      speed += stats.foragingSpeed;
-      efficiency += stats.foragingEfficiency;
+    if (actionType === "/action_types/foraging") {
+      bonuses[BUFF_TYPE_ACTION_SPEED] += stats.foragingSpeed;
+      bonuses[BUFF_TYPE_EFFICIENCY] += stats.foragingEfficiency;
     }
-    if (skillHrid === "/skills/woodcutting") {
-      speed += stats.woodcuttingSpeed;
-      efficiency += stats.woodcuttingEfficiency;
+    if (actionType === "/action_types/woodcutting") {
+      bonuses[BUFF_TYPE_ACTION_SPEED] += stats.woodcuttingSpeed;
+      bonuses[BUFF_TYPE_EFFICIENCY] += stats.woodcuttingEfficiency;
     }
-    if (skillHrid === "/skills/cheesesmithing") {
-      speed += stats.cheesesmithingSpeed;
-      efficiency += stats.cheesesmithingEfficiency;
+    if (actionType === "/action_types/cheesesmithing") {
+      bonuses[BUFF_TYPE_ACTION_SPEED] += stats.cheesesmithingSpeed;
+      bonuses[BUFF_TYPE_EFFICIENCY] += stats.cheesesmithingEfficiency;
     }
-    if (skillHrid === "/skills/crafting") {
-      speed += stats.craftingSpeed;
-      efficiency += stats.craftingEfficiency;
+    if (actionType === "/action_types/crafting") {
+      bonuses[BUFF_TYPE_ACTION_SPEED] += stats.craftingSpeed;
+      bonuses[BUFF_TYPE_EFFICIENCY] += stats.craftingEfficiency;
     }
-    if (skillHrid === "/skills/tailoring") {
-      speed += stats.tailoringSpeed;
-      efficiency += stats.tailoringEfficiency;
+    if (actionType === "/action_types/tailoring") {
+      bonuses[BUFF_TYPE_ACTION_SPEED] += stats.tailoringSpeed;
+      bonuses[BUFF_TYPE_EFFICIENCY] += stats.tailoringEfficiency;
     }
-    if (skillHrid === "/skills/cooking") {
-      speed += stats.cookingSpeed;
-      efficiency += stats.cookingEfficiency;
+    if (actionType === "/action_types/cooking") {
+      bonuses[BUFF_TYPE_ACTION_SPEED] += stats.cookingSpeed;
+      bonuses[BUFF_TYPE_EFFICIENCY] += stats.cookingEfficiency;
     }
-    if (skillHrid === "/skills/brewing") {
-      speed += stats.brewingSpeed;
-      efficiency += stats.brewingEfficiency;
+    if (actionType === "/action_types/brewing") {
+      bonuses[BUFF_TYPE_ACTION_SPEED] += stats.brewingSpeed;
+      bonuses[BUFF_TYPE_EFFICIENCY] += stats.brewingEfficiency;
     }
-    if (skillHrid === "/skills/enhancing") {
-      speed += stats.enhancingSpeed;
-      efficiency += stats.enhancingSuccess;
+    if (actionType === "/action_types/enhancing") {
+      bonuses[BUFF_TYPE_ACTION_SPEED] += stats.enhancingSpeed;
+      bonuses[BUFF_TYPE_EFFICIENCY] += stats.enhancingSuccess;
     }
-    speed += stats.taskSpeed;
-    efficiency += stats.skillingEfficiency;
   }
 
-  return { speed, efficiency };
+  return bonuses;
 }
 
 function getHouseBonuses(actionType: string, settings: Settings) {
@@ -129,16 +135,11 @@ function computeSingleAction(
   settings: Settings,
   market: Market,
 ): ComputedAction {
-  // Compute tool bonuses
-  const { speed: toolSpeed, efficiency: toolEfficiency } = getToolBonuses(
-    action.levelRequirement.skillHrid,
-    settings,
-  );
-
   // Compute bonuses
+  const toolBonuses = getToolBonuses(action.type, settings);
   const houseBonuses = getHouseBonuses(action.type, settings);
   const communityBonuses = getCommunityBuffBonuses(action.type, settings);
-  const bonuses = addBonuses(houseBonuses, communityBonuses);
+  const bonuses = addBonuses(toolBonuses, houseBonuses, communityBonuses);
 
   // Compute level efficiency
   const level = settings.levels[action.levelRequirement.skillHrid]!;
@@ -150,9 +151,8 @@ function computeSingleAction(
 
   // Compute actions per hour
   const baseActionsPerHour = 3600_000_000_000 / action.baseTimeCost;
-  const speed = 1 + toolSpeed + bonuses[BUFF_TYPE_SPEED]!;
-  const efficiency =
-    1 + toolEfficiency + bonuses[BUFF_TYPE_EFFICIENCY]! + levelEfficiency;
+  const speed = 1 + bonuses[BUFF_TYPE_ACTION_SPEED]!;
+  const efficiency = 1 + bonuses[BUFF_TYPE_EFFICIENCY]! + levelEfficiency;
   const actionsPerHour = baseActionsPerHour * speed * efficiency;
 
   // Compute inputs and outputs
