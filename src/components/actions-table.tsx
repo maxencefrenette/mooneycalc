@@ -7,6 +7,7 @@ import { DataTableColumnHeader } from "./ui/data-table-column-header";
 import { useMarket } from "~/services/market";
 import { skillName } from "~/services/skills";
 import ItemDetail from "./item-detail";
+import { useMemo } from "react";
 
 export const columns: ColumnDef<ComputedAction>[] = [
   {
@@ -155,11 +156,20 @@ export const columns: ColumnDef<ComputedAction>[] = [
 export function ActionsDataTable() {
   const settings = useSettingsStore((state) => state.settings);
   const market = useMarket();
+
+  const visibleColumns = useMemo(() => {
+    if (settings.filters.showAutoTeas) {
+      return columns;
+    }
+
+    return columns.filter((column) => column.id !== "teas");
+  }, [settings.filters.showAutoTeas]);
+
   const actions = computeActions(settings, market);
 
   return (
     <DataTable
-      columns={columns}
+      columns={visibleColumns}
       data={actions}
       initialSorting={[{ id: "profit", desc: true }]}
     />
