@@ -1,5 +1,8 @@
 "use client";
-import { type ComputedAction, getActions } from "~/services/calculation";
+import {
+  type ComputedAction,
+  getComputedActions,
+} from "~/services/calculation";
 import { DataTable } from "~/components/ui/data-table";
 import { useSettingsStore } from "~/services/settings";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
@@ -136,7 +139,7 @@ export const columns: ColumnDef<ComputedAction>[] = [
 export function ActionsDataTable() {
   const settings = useSettingsStore((state) => state.settings);
   const market = useMarket();
-  const actions = getActions(settings, market);
+  const actions = getComputedActions(settings, market);
 
   return (
     <DataTable

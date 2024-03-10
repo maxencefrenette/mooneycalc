@@ -247,7 +247,7 @@ function computeSingleAction(
   };
 }
 
-export function getActions(settings: Settings, market: Market) {
+export function getComputedActions(settings: Settings, market: Market) {
   let actions = Object.values(sortedActions);
 
   // Filter out combat and enhancement actions
