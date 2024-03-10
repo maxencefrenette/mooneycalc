@@ -8,7 +8,6 @@ import { useSettingsStore } from "~/services/settings";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "./ui/data-table-column-header";
 import { useMarket } from "~/services/market";
-import { itemName } from "~/services/items";
 import { skillName } from "~/services/skills";
 import ItemDetail from "./item-detail";
 
@@ -47,7 +46,7 @@ export const columns: ColumnDef<ComputedAction>[] = [
               {input.count.toLocaleString(undefined, {
                 maximumFractionDigits: 2,
               })}{" "}
-              x {itemName(input.itemHrid)}
+              x <ItemDetail hrid={input.itemHrid} />
             </div>
           ))}
         </>

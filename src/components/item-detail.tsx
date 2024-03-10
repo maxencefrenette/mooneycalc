@@ -14,7 +14,8 @@ export const ItemDetail = ({ hrid }: ItemDetailProps) => {
   return (
     <HoverCard openDelay={0} closeDelay={0}>
       <HoverCardTrigger>{name}</HoverCardTrigger>
-      <HoverCardContent side="left" sideOffset={16}>
+      <HoverCardContent side="right" sideOffset={16}>
+        <h3 className="pb-1 text-muted-foreground">{name}</h3>
         <p>Ask: {market.market[name]?.ask}</p>
         <p>Bid: {market.market[name]?.bid}</p>
       </HoverCardContent>
