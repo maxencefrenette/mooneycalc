@@ -343,9 +343,16 @@ export function computeActions(settings: Settings, market: Market) {
       ? teaLoadoutByActionType[a.type] ?? [[]]
       : [[]];
 
-    return teaLoadouts.map((teaLoadout) => {
+    const candidateActions = teaLoadouts.map((teaLoadout) => {
       return computeSingleAction(a, teaLoadout, settings, market);
     });
+
+    // Keep candidate acton with the maximum profit
+    const bestAction = candidateActions.reduce((best, current) => {
+      return current.profit > best.profit ? current : best;
+    });
+
+    return bestAction;
   });
   return computedActions;
 }
