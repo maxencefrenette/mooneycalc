@@ -1,5 +1,5 @@
 "use client";
-import { type ComputedAction, getActions } from "~/services/actions";
+import { type ComputedAction, getActions } from "~/services/calculation";
 import { DataTable } from "~/components/ui/data-table";
 import { useSettingsStore } from "~/services/settings";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
