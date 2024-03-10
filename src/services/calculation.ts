@@ -195,7 +195,7 @@ function getOutputPrice(itemHrid: string, settings: Settings, market: Market) {
   if (ask === -1) ask = bid;
 
   const p = settings.market.outputBidAskProportion;
-  const marketPrice = lerp(bid, ask, p);
+  const marketPrice = lerp(bid, ask, p) * 0.98;
 
   // Use the higher of the market price and the sell price
   const sellPrice = gameData.itemDetailMap[itemHrid]!.sellPrice;
