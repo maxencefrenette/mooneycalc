@@ -39,7 +39,7 @@ function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
 
-function getToolBonuses(actionType: string, settings: Settings) {
+function getEquipmentBonuses(actionType: string, settings: Settings) {
   const bonuses = zeroBonuses();
 
   for (const equipmentHrid of Object.values(settings.equipment)) {
@@ -136,10 +136,10 @@ function computeSingleAction(
   market: Market,
 ): ComputedAction {
   // Compute bonuses
-  const toolBonuses = getToolBonuses(action.type, settings);
+  const equipmentBonuses = getEquipmentBonuses(action.type, settings);
   const houseBonuses = getHouseBonuses(action.type, settings);
   const communityBonuses = getCommunityBuffBonuses(action.type, settings);
-  const bonuses = addBonuses(toolBonuses, houseBonuses, communityBonuses);
+  const bonuses = addBonuses(equipmentBonuses, houseBonuses, communityBonuses);
 
   // Compute level efficiency
   const level = settings.levels[action.levelRequirement.skillHrid]!;
