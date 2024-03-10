@@ -7,7 +7,7 @@ import {
   useReactTable,
   type SortingState,
   getSortedRowModel,
-  VisibilityState,
+  type VisibilityState,
 } from "@tanstack/react-table";
 import React from "react";
 

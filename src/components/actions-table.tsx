@@ -2,13 +2,11 @@
 import { type ComputedAction, computeActions } from "~/services/calculation";
 import { DataTable } from "~/components/ui/data-table";
 import { useSettingsStore } from "~/services/settings";
-import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
+import { type ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "./ui/data-table-column-header";
 import { useMarket } from "~/services/market";
 import { skillName } from "~/services/skills";
 import ItemDetail from "./item-detail";
-
-const columnHelper = createColumnHelper<ComputedAction>();
 
 export const columns: ColumnDef<ComputedAction>[] = [
   {
@@ -27,13 +25,15 @@ export const columns: ColumnDef<ComputedAction>[] = [
   {
     accessorKey: "levelRequired",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Level" />
+      <DataTableColumnHeader column={column} title="Level" sortable />
     ),
     cell: ({ row }) => row.original.levelRequired,
   },
-  columnHelper.display({
-    id: "inputs",
-    header: "Inputs",
+  {
+    accessorKey: "inputs",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Inputs" />
+    ),
     cell: ({ row }) => {
       const action = row.original;
       return (
@@ -49,11 +49,11 @@ export const columns: ColumnDef<ComputedAction>[] = [
         </>
       );
     },
-  }),
+  },
   {
     accessorKey: "inputsPrice",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Inputs price" />
+      <DataTableColumnHeader column={column} title="Inputs price" sortable />
     ),
     cell: ({ row }) => (
       <div className="max-w-28 text-right">
@@ -63,9 +63,11 @@ export const columns: ColumnDef<ComputedAction>[] = [
       </div>
     ),
   },
-  columnHelper.display({
-    id: "outputs",
-    header: "Outputs",
+  {
+    accessorKey: "outputs",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Outputs" />
+    ),
     cell: ({ row }) => {
       const action = row.original;
       return (
@@ -81,11 +83,11 @@ export const columns: ColumnDef<ComputedAction>[] = [
         </>
       );
     },
-  }),
+  },
   {
     accessorKey: "outputsPrice",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Outputs price" />
+      <DataTableColumnHeader column={column} title="Outputs price" sortable />
     ),
     cell: ({ row }) => (
       <div className="max-w-28 text-right">
@@ -98,7 +100,7 @@ export const columns: ColumnDef<ComputedAction>[] = [
   {
     accessorKey: "outputMaxBidAskSpread",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Output spread" />
+      <DataTableColumnHeader column={column} title="Output spread" sortable />
     ),
     cell: ({ row }) => (
       <div className="max-w-28 text-right">
@@ -111,7 +113,7 @@ export const columns: ColumnDef<ComputedAction>[] = [
   {
     accessorKey: "actionsPerHour",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Actions/h" />
+      <DataTableColumnHeader column={column} title="Actions/h" sortable />
     ),
     cell: ({ row }) => (
       <div className="text-right">{row.original.actionsPerHour.toFixed(0)}</div>
@@ -120,7 +122,7 @@ export const columns: ColumnDef<ComputedAction>[] = [
   {
     accessorKey: "profit",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Profit/h" />
+      <DataTableColumnHeader column={column} title="Profit/h" sortable />
     ),
     cell: ({ row }) => (
       <div className="max-w-28 text-right">
