@@ -108,6 +108,16 @@ export const ActionTypeDetailSchema = z.object({
 });
 export type ActionTypeDetail = z.infer<typeof ActionTypeDetailSchema>;
 
+export const BuffTypeDetailSchema = z.object({
+  hrid: z.string(),
+  isCombat: z.boolean(),
+  name: z.string(),
+  description: z.string(),
+  debuffDescription: z.string(),
+  sortIndex: z.number(),
+});
+export type BuffTypeDetail = z.infer<typeof BuffTypeDetailSchema>;
+
 export const BuffSchema = z.object({
   uniqueHrid: z.string(),
   typeHrid: z.string(),
@@ -148,6 +158,7 @@ const GameDataSchema = z.object({
   skillDetailMap: z.record(SkillDetailSchema),
   actionDetailMap: z.record(ActionDetailSchema),
   actionTypeDetailMap: z.record(ActionTypeDetailSchema),
+  buffTypeDetailMap: z.record(BuffTypeDetailSchema),
   houseRoomDetailMap: z.record(HouseRoomDetailSchema),
   communityBuffTypeDetailMap: z.record(CommunityBuffTypeDetailSchema),
 });

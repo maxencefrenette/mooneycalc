@@ -1,4 +1,11 @@
 import { sortedActions } from "./actions";
+import {
+  BUFF_TYPE_EFFICIENCY,
+  BUFF_TYPE_GATHERING,
+  BUFF_TYPE_SPEED,
+  addBonuses,
+  zeroBonuses,
+} from "./buffs";
 import { communityBuffs } from "./community-buffs";
 import { type ActionDetail, gameData, type ItemCount } from "./data";
 import { houseRooms } from "./house-rooms";
@@ -84,8 +91,7 @@ function getToolBonuses(skillHrid: string, settings: Settings) {
 }
 
 function getHouseBonuses(actionType: string, settings: Settings) {
-  let efficiency = 0;
-  let speed = 0;
+  const buffEffects = zeroBonuses();
 
   for (const houseRoom of houseRooms) {
     const level = settings.houseRooms[houseRoom.hrid]!;
@@ -94,20 +100,16 @@ function getHouseBonuses(actionType: string, settings: Settings) {
     if (houseRoom.usableInActionTypeMap[actionType] !== true) continue;
 
     for (const buff of [...houseRoom.actionBuffs, ...houseRoom.globalBuffs]) {
-      if (buff.typeHrid === "/buff_types/efficiency") {
-        efficiency += buff.flatBoost + buff.flatBoostLevelBonus * (level - 1);
-      }
-      if (buff.typeHrid === "/buff_types/speed") {
-        speed += buff.flatBoost + buff.flatBoostLevelBonus * (level - 1);
-      }
+      buffEffects[buff.typeHrid] +=
+        buff.flatBoost + buff.flatBoostLevelBonus * (level - 1);
     }
   }
 
-  return { efficiency, speed };
+  return buffEffects;
 }
 
 function getCommunityBuffBonuses(actionType: string, settings: Settings) {
-  let efficiency = 0;
+  const buffEffects = zeroBonuses();
 
   for (const buff of communityBuffs) {
     const level = settings.communityBuffs[buff.hrid]!;
@@ -115,15 +117,11 @@ function getCommunityBuffBonuses(actionType: string, settings: Settings) {
     if (level === 0) continue;
     if (buff.usableInActionTypeMap[actionType] !== true) continue;
 
-    const buffValue =
+    buffEffects[buff.buff.typeHrid] +=
       buff.buff.flatBoost + buff.buff.flatBoostLevelBonus * (level - 1);
-
-    if (buff.buff.typeHrid === "/buff_types/efficiency") {
-      efficiency += buffValue;
-    }
   }
 
-  return { efficiency };
+  return buffEffects;
 }
 
 function computeSingleAction(
@@ -131,37 +129,16 @@ function computeSingleAction(
   settings: Settings,
   market: Market,
 ): ComputedAction {
-  const inputs = action.inputItems?.slice() ?? [];
-  if (action.upgradeItemHrid) {
-    inputs.push({ itemHrid: action.upgradeItemHrid, count: 1 });
-  }
-
-  let outputs = action.outputItems ?? [];
-  if (action.dropTable) {
-    const dropTableOutputs = action.dropTable.map((e) => ({
-      itemHrid: e.itemHrid,
-      count: e.dropRate * 0.5 * (e.minCount + e.maxCount),
-    }));
-    outputs = [...outputs, ...dropTableOutputs];
-  }
-
   // Compute tool bonuses
   const { speed: toolSpeed, efficiency: toolEfficiency } = getToolBonuses(
     action.levelRequirement.skillHrid,
     settings,
   );
 
-  // Compute house bonuses
-  const { speed: houseSpeed, efficiency: houseEfficiency } = getHouseBonuses(
-    action.type,
-    settings,
-  );
-
-  // Compute community buff bonuses
-  const { efficiency: communityEfficiency } = getCommunityBuffBonuses(
-    action.type,
-    settings,
-  );
+  // Compute bonuses
+  const houseBonuses = getHouseBonuses(action.type, settings);
+  const communityBonuses = getCommunityBuffBonuses(action.type, settings);
+  const bonuses = addBonuses(houseBonuses, communityBonuses);
 
   // Compute level efficiency
   const level = settings.levels[action.levelRequirement.skillHrid]!;
@@ -173,14 +150,26 @@ function computeSingleAction(
 
   // Compute actions per hour
   const baseActionsPerHour = 3600_000_000_000 / action.baseTimeCost;
-  const speed = 1 + toolSpeed + houseSpeed;
+  const speed = 1 + toolSpeed + bonuses[BUFF_TYPE_SPEED]!;
   const efficiency =
-    1 +
-    toolEfficiency +
-    houseEfficiency +
-    communityEfficiency +
-    levelEfficiency;
+    1 + toolEfficiency + bonuses[BUFF_TYPE_EFFICIENCY]! + levelEfficiency;
   const actionsPerHour = baseActionsPerHour * speed * efficiency;
+
+  // Compute inputs and outputs
+  const inputs = action.inputItems?.slice() ?? [];
+  if (action.upgradeItemHrid) {
+    inputs.push({ itemHrid: action.upgradeItemHrid, count: 1 });
+  }
+
+  const gatheringBonus = 1 + bonuses[BUFF_TYPE_GATHERING]!;
+  let outputs = action.outputItems ?? [];
+  if (action.dropTable) {
+    const dropTableOutputs = action.dropTable.map((e) => ({
+      itemHrid: e.itemHrid,
+      count: e.dropRate * 0.5 * (e.minCount + e.maxCount) * gatheringBonus,
+    }));
+    outputs = [...outputs, ...dropTableOutputs];
+  }
 
   // Compute stats per action
   const revenue = outputs.reduce((sum, output) => {
