@@ -2,7 +2,7 @@ import { communityBuffs } from "./community-buffs";
 import { type ActionDetail, gameData, type ItemCount } from "./data";
 import { houseRooms } from "./house-rooms";
 import { itemName } from "./items";
-import { type Market } from "./market";
+import { type Market } from "./market-fetch";
 import { type Settings } from "./settings";
 
 const sortedActions = Object.values(gameData.actionDetailMap).sort(
