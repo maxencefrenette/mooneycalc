@@ -184,10 +184,11 @@ function computeSingleAction(
     if (ask === -1) ask = bid;
 
     const p = settings.market.outputBidAskProportion;
-    let price = lerp(bid, ask, p);
+    const marketPrice = lerp(bid, ask, p);
 
-    // TODO: set price to sell price if it's higher than market price
-    price = Math.max(price, gameData.itemDetailMap[output.itemHrid]!.sellPrice);
+    // Use the higher of the market price and the sell price
+    const sellPrice = gameData.itemDetailMap[output.itemHrid]!.sellPrice;
+    const price = Math.max(marketPrice, sellPrice);
 
     return sum + price * output.count;
   }, 0);
