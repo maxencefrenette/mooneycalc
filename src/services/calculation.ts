@@ -1,4 +1,4 @@
-import { sortedActions } from "./actions";
+import { actions } from "./actions";
 import {
   BUFF_TYPE_EFFICIENCY,
   BUFF_TYPE_ENHANCING_SUCCESS,
@@ -303,16 +303,16 @@ function computeSingleAction(
 }
 
 export function computeActions(settings: Settings, market: Market) {
-  let actions = Object.values(sortedActions);
+  let filteredActions = actions;
 
   // Filter out combat and enhancement actions
-  actions = actions.filter(
+  filteredActions = filteredActions.filter(
     (a) =>
       a.type !== "/action_types/combat" && a.type !== "/action_types/enhancing",
   );
 
   // Filter out actions that involve untradable items
-  actions = actions.filter((a) => {
+  filteredActions = filteredActions.filter((a) => {
     if (a.inputItems) {
       for (const input of a.inputItems) {
         if (gameData.itemDetailMap[input.itemHrid]!.isTradable === false) {
@@ -332,13 +332,13 @@ export function computeActions(settings: Settings, market: Market) {
 
   // Filter out actions with unmet level requirements
   if (settings.filters.hideUnmetLevelRequirements) {
-    actions = actions.filter((a) => {
+    filteredActions = filteredActions.filter((a) => {
       const level = settings.levels[a.levelRequirement.skillHrid]!;
       return level >= a.levelRequirement.level;
     });
   }
 
-  const computedActions = actions.flatMap((a) => {
+  const computedActions = filteredActions.flatMap((a) => {
     const teaLoadouts = settings.filters.showAutoTeas
       ? teaLoadoutByActionType[a.type] ?? [[]]
       : [[]];
