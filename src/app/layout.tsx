@@ -3,6 +3,7 @@ import "~/styles/globals.css";
 import { Inter } from "next/font/google";
 import { cn } from "~/lib/utils";
 import { TooltipProvider } from "~/components/ui/tooltip";
+import { CSPostHogProvider } from "./providers";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,14 +23,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body
-        className={cn(
-          "min-h-screen bg-background font-sans antialiased",
-          inter.variable,
-        )}
-      >
-        <TooltipProvider>{children}</TooltipProvider>
-      </body>
+      <CSPostHogProvider>
+        <body
+          className={cn(
+            "min-h-screen bg-background font-sans antialiased",
+            inter.variable,
+          )}
+        >
+          <TooltipProvider>{children}</TooltipProvider>
+        </body>
+      </CSPostHogProvider>
     </html>
   );
 }
