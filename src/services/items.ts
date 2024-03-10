@@ -1,5 +1,9 @@
 import { type ItemDetail, gameData } from "./data";
 
+export const items = Object.values(gameData.itemDetailMap).sort(
+  (a, b) => a.sortIndex - b.sortIndex,
+);
+
 export function itemName(itemHrid: string) {
   return gameData.itemDetailMap[itemHrid]?.name ?? itemHrid;
 }

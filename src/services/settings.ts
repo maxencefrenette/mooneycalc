@@ -15,6 +15,7 @@ const SettingsSchema = z.object({
   }),
   filters: z.object({
     hideUnmetLevelRequirements: z.boolean(),
+    showAutoTeas: z.boolean(),
   }),
 });
 
@@ -61,6 +62,7 @@ export const initialSettings: Settings = {
   },
   filters: {
     hideUnmetLevelRequirements: true,
+    showAutoTeas: false,
   },
 };
 
@@ -117,6 +119,9 @@ function mergeStates(
         hideUnmetLevelRequirements:
           persistedState.settings?.filters?.hideUnmetLevelRequirements ??
           currentState.settings.filters.hideUnmetLevelRequirements,
+        showAutoTeas:
+          persistedState.settings?.filters?.showAutoTeas ??
+          currentState.settings.filters.showAutoTeas,
       },
     },
   };

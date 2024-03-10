@@ -49,7 +49,7 @@ export function SettingsForm() {
         <TabsTrigger value="house">House</TabsTrigger>
         <TabsTrigger value="community-buffs">Community Buffs</TabsTrigger>
         <TabsTrigger value="market">Market</TabsTrigger>
-        <TabsTrigger value="filters">Filters</TabsTrigger>
+        <TabsTrigger value="other">Other</TabsTrigger>
       </TabsList>
       <div className="h-4"></div>
       <TabsContent value="levels">
@@ -302,36 +302,65 @@ export function SettingsForm() {
           </CardContent>
         </Card>
       </TabsContent>
-      <TabsContent value="filters">
+      <TabsContent value="other">
         <Card>
           <CardHeader>
-            <CardTitle>Filters</CardTitle>
+            <CardTitle>Other</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="hide-unmet-level-requirements"
-                checked={settings?.filters?.hideUnmetLevelRequirements ?? true}
-                onCheckedChange={(checked) => {
-                  if (checked === "indeterminate") {
-                    return;
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="hide-unmet-level-requirements"
+                  checked={
+                    settings?.filters?.hideUnmetLevelRequirements ?? true
                   }
+                  onCheckedChange={(checked) => {
+                    if (checked === "indeterminate") {
+                      return;
+                    }
 
-                  return updateSettings({
-                    ...settings,
-                    filters: {
-                      ...settings.filters,
-                      hideUnmetLevelRequirements: checked,
-                    },
-                  });
-                }}
-              />
-              <Label
-                htmlFor="hide-unmet-level-requirements"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Hide actions with unmet level requirements
-              </Label>
+                    return updateSettings({
+                      ...settings,
+                      filters: {
+                        ...settings.filters,
+                        hideUnmetLevelRequirements: checked,
+                      },
+                    });
+                  }}
+                />
+                <Label
+                  htmlFor="hide-unmet-level-requirements"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Hide actions with unmet level requirements
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="show-auto-teas"
+                  checked={settings?.filters?.showAutoTeas ?? false}
+                  onCheckedChange={(checked) => {
+                    if (checked === "indeterminate") {
+                      return;
+                    }
+
+                    return updateSettings({
+                      ...settings,
+                      filters: {
+                        ...settings.filters,
+                        showAutoTeas: checked,
+                      },
+                    });
+                  }}
+                />
+                <Label
+                  htmlFor="show-auto-teas"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Show auto-teas
+                </Label>
+              </div>
             </div>
           </CardContent>
         </Card>

@@ -9,6 +9,7 @@ import {
   BUFF_TYPE_TASK_SPEED,
   BUFF_TYPE_WISDOM,
   BUFF_TYPE_RARE_FIND,
+  type Bonuses,
 } from "./buffs";
 import { communityBuffs } from "./community-buffs";
 import { type ActionDetail, gameData, type ItemCount } from "./data";
@@ -16,12 +17,14 @@ import { houseRooms } from "./house-rooms";
 import { itemName } from "./items";
 import { type Market } from "./market-fetch";
 import { type Settings } from "./settings";
+import { TEA_PER_HOUR, teaLoadoutByActionType } from "./teas";
 
 export interface ComputedAction {
   id: string;
   name: string;
   skillHrid: string;
   levelRequired: number;
+  teas: string[];
   inputs: ItemCount[];
   inputsPrice: number;
   outputs: ItemCount[];
@@ -130,8 +133,80 @@ function getCommunityBuffBonuses(actionType: string, settings: Settings) {
   return buffEffects;
 }
 
+function getTeaBonuses(actionType: string, teaHrid: string) {
+  const tea = gameData.itemDetailMap[teaHrid]!;
+  const buffEffects = zeroBonuses();
+
+  if (tea.consumableDetail.buffs === undefined) {
+    console.log(`No buffs for tea ${teaHrid}`);
+    return buffEffects;
+  }
+
+  if (tea.consumableDetail.usableInActionTypeMap![actionType] !== true) {
+    console.log(`Tea ${teaHrid} is not usable in action type ${actionType}`);
+    return buffEffects;
+  }
+
+  for (const buff of tea.consumableDetail.buffs!) {
+    buffEffects[buff.typeHrid] += buff.flatBoost;
+  }
+
+  return buffEffects;
+}
+
+function getLevelBonus(skillHrid: string, bonuses: Bonuses) {
+  const skillToBonusMap: Record<string, string> = {
+    "/skills/foraging": "/buff_types/foraging_level",
+  };
+
+  const bonusName = skillToBonusMap[skillHrid];
+
+  if (bonusName === undefined) {
+    return 0;
+  }
+
+  return bonuses[bonusName] ?? 0;
+}
+
+function getInputPrice(itemHrid: string, settings: Settings, market: Market) {
+  if (itemHrid === "/items/coin") return 1;
+
+  let { bid, ask } = market.market[itemName(itemHrid)] ?? {
+    bid: -1,
+    ask: -1,
+  };
+  if (ask === -1) ask = Number.POSITIVE_INFINITY;
+  if (bid === -1) bid = ask;
+
+  const p = settings.market.inputBidAskProportion;
+  const marketPrice = lerp(ask, bid, p);
+
+  return marketPrice;
+}
+
+function getOutputPrice(itemHrid: string, settings: Settings, market: Market) {
+  if (itemHrid === "/items/coin") return 1;
+
+  let { bid, ask } = market.market[itemName(itemHrid)] ?? {
+    bid: -1,
+    ask: -1,
+  };
+  if (bid === -1) bid = 0;
+  if (ask === -1) ask = bid;
+
+  const p = settings.market.outputBidAskProportion;
+  const marketPrice = lerp(bid, ask, p);
+
+  // Use the higher of the market price and the sell price
+  const sellPrice = gameData.itemDetailMap[itemHrid]!.sellPrice;
+  const bestPrice = Math.max(marketPrice, sellPrice);
+
+  return bestPrice;
+}
+
 function computeSingleAction(
   action: ActionDetail,
+  teas: string[],
   settings: Settings,
   market: Market,
 ): ComputedAction {
@@ -139,10 +214,20 @@ function computeSingleAction(
   const equipmentBonuses = getEquipmentBonuses(action.type, settings);
   const houseBonuses = getHouseBonuses(action.type, settings);
   const communityBonuses = getCommunityBuffBonuses(action.type, settings);
-  const bonuses = addBonuses(equipmentBonuses, houseBonuses, communityBonuses);
+  const teaBonuses = addBonuses(
+    ...teas.map((tea) => getTeaBonuses(action.type, tea)),
+  );
+  const bonuses = addBonuses(
+    equipmentBonuses,
+    houseBonuses,
+    communityBonuses,
+    teaBonuses,
+  );
 
   // Compute level efficiency
-  const level = settings.levels[action.levelRequirement.skillHrid]!;
+  const levelBonus = getLevelBonus(action.levelRequirement.skillHrid, bonuses);
+  const level =
+    settings.levels[action.levelRequirement.skillHrid]! + levelBonus;
   const levelsAboveRequirement = Math.max(
     0,
     level - action.levelRequirement.level,
@@ -171,26 +256,15 @@ function computeSingleAction(
     outputs = [...outputs, ...dropTableOutputs];
   }
 
-  // Compute stats per action
+  const inputsCost = inputs.reduce(
+    (sum, input) =>
+      sum + getInputPrice(input.itemHrid, settings, market) * input.count,
+    0,
+  );
   const revenue = outputs.reduce((sum, output) => {
-    if (output.itemHrid === "/items/coin")
-      return sum + output.count * actionsPerHour;
-
-    let { bid, ask } = market.market[itemName(output.itemHrid)] ?? {
-      bid: -1,
-      ask: -1,
-    };
-    if (bid === -1) bid = 0;
-    if (ask === -1) ask = bid;
-
-    const p = settings.market.outputBidAskProportion;
-    const marketPrice = lerp(bid, ask, p);
-
-    // Use the higher of the market price and the sell price
-    const sellPrice = gameData.itemDetailMap[output.itemHrid]!.sellPrice;
-    const price = Math.max(marketPrice, sellPrice);
-
-    return sum + price * output.count;
+    return (
+      sum + getOutputPrice(output.itemHrid, settings, market) * output.count
+    );
   }, 0);
 
   const outputBidAskSpreads = outputs.map((output) => {
@@ -204,31 +278,22 @@ function computeSingleAction(
   });
   const outputMaxBidAskSpread = Math.max(...outputBidAskSpreads);
 
-  const cost = inputs.reduce((sum, input) => {
-    if (input.itemHrid === "/items/coin")
-      return sum + input.count * actionsPerHour;
+  const teasCost = teas.reduce(
+    (sum, tea) => sum + getInputPrice(tea, settings, market),
+    0,
+  );
 
-    let { bid, ask } = market.market[itemName(input.itemHrid)] ?? {
-      bid: -1,
-      ask: -1,
-    };
-    if (ask === -1) ask = Number.POSITIVE_INFINITY;
-    if (bid === -1) bid = ask;
-
-    const p = settings.market.inputBidAskProportion;
-    const price = lerp(ask, bid, p);
-
-    return sum + price * input.count;
-  }, 0);
-  const profit = (revenue - cost) * actionsPerHour;
+  const profit =
+    (revenue - inputsCost) * actionsPerHour - teasCost * TEA_PER_HOUR;
 
   return {
     id: action.hrid,
+    name: action.name,
     skillHrid: action.levelRequirement.skillHrid,
     levelRequired: action.levelRequirement.level,
-    name: action.name,
+    teas: teas,
     inputs,
-    inputsPrice: cost,
+    inputsPrice: inputsCost,
     outputs,
     outputsPrice: revenue,
     outputMaxBidAskSpread,
@@ -273,8 +338,14 @@ export function computeActions(settings: Settings, market: Market) {
     });
   }
 
-  const computedActions = actions.map((a) =>
-    computeSingleAction(a, settings, market),
-  );
+  const computedActions = actions.flatMap((a) => {
+    const teaLoadouts = settings.filters.showAutoTeas
+      ? teaLoadoutByActionType[a.type] ?? [[]]
+      : [[]];
+
+    return teaLoadouts.map((teaLoadout) => {
+      return computeSingleAction(a, teaLoadout, settings, market);
+    });
+  });
   return computedActions;
 }

@@ -9,6 +9,18 @@ export const EquipmentTypeDetailSchema = z.object({
 });
 export type EquipmentTypeDetail = z.infer<typeof EquipmentTypeDetailSchema>;
 
+export const BuffSchema = z.object({
+  uniqueHrid: z.string(),
+  typeHrid: z.string(),
+  ratioBoost: z.number(),
+  ratioBoostLevelBonus: z.number(),
+  flatBoost: z.number(),
+  flatBoostLevelBonus: z.number(),
+  startTime: z.string(),
+  duration: z.number(),
+});
+export type Buff = z.infer<typeof BuffSchema>;
+
 export const ItemDetailSchema = z.object({
   hrid: z.string(),
   name: z.string(),
@@ -49,7 +61,15 @@ export const ItemDetailSchema = z.object({
       skillingExperience: z.number(),
     }),
   }),
-  consumableDetail: z.unknown(), // TODO
+  consumableDetail: z.object({
+    cooldownDuration: z.number(),
+    usableInActionTypeMap: z.record(z.boolean()).nullable(),
+    hitpointRestore: z.number(),
+    manapointRestore: z.number(),
+    recoveryDuration: z.number(),
+    buffs: z.array(BuffSchema).nullable(),
+    defaultCombatTriggers: z.unknown(),
+  }),
   abilityBookDetail: z.unknown(), // TODO
   sortIndex: z.number(),
 });
@@ -117,18 +137,6 @@ export const BuffTypeDetailSchema = z.object({
   sortIndex: z.number(),
 });
 export type BuffTypeDetail = z.infer<typeof BuffTypeDetailSchema>;
-
-export const BuffSchema = z.object({
-  uniqueHrid: z.string(),
-  typeHrid: z.string(),
-  ratioBoost: z.number(),
-  ratioBoostLevelBonus: z.number(),
-  flatBoost: z.number(),
-  flatBoostLevelBonus: z.number(),
-  startTime: z.string(),
-  duration: z.number(),
-});
-export type Buff = z.infer<typeof BuffSchema>;
 
 const HouseRoomDetailSchema = z.object({
   hrid: z.string(),
