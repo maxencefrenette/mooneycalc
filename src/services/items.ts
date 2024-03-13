@@ -15,7 +15,9 @@ export function itemsByEquipmentType(equipmentTypeHrid: string) {
 }
 
 export function isSkillingEquipment(item: ItemDetail) {
-  return Object.values(item.equipmentDetail.noncombatStats).some(
-    (stat) => stat !== 0,
+  return (
+    Object.values(item.equipmentDetail.noncombatStats).some(
+      (stat) => stat !== 0,
+    ) || item.equipmentDetail.combatStats.drinkSlots > 0
   );
 }

@@ -34,7 +34,10 @@ export const ItemDetailSchema = z.object({
   protectionItemHrids: z.unknown(), // TODO
   equipmentDetail: z.object({
     type: z.string(),
-    combatStats: z.unknown(), // TODO
+    combatStats: z.object({
+      // TODO
+      drinkSlots: z.number(),
+    }),
     noncombatStats: z.object({
       milkingSpeed: z.number(),
       foragingSpeed: z.number(),
