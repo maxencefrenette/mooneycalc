@@ -28,19 +28,19 @@ const teaCombinationsByActionType: Record<string, string[][]> = {
     "/items/milking_tea",
     "/items/super_milking_tea",
     "/items/efficiency_tea",
-    "/items/artisan_tea",
+    "/items/gathering_tea",
   ]),
   "/action_types/foraging": chooseUpTo(3, [
     "/items/foraging_tea",
     "/items/super_foraging_tea",
     "/items/efficiency_tea",
-    "/items/artisan_tea",
+    "/items/gathering_tea",
   ]),
   "/action_types/woodcutting": chooseUpTo(3, [
     "/items/woodcutting_tea",
     "/items/super_woodcutting_tea",
     "/items/efficiency_tea",
-    "/items/artisan_tea",
+    "/items/gathering_tea",
   ]),
   "/action_types/cheesesmithing": chooseUpTo(3, [
     "/items/cheesesmithing_tea",
