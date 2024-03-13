@@ -1,5 +1,5 @@
-import { Bonuses, addBonuses, zeroBonuses } from "./buffs";
-import { ItemDetail, gameData } from "./data";
+import { type Bonuses, addBonuses, zeroBonuses } from "./buffs";
+import { gameData } from "./data";
 import { items } from "./items";
 
 export const TEA_PER_HOUR = 12;
