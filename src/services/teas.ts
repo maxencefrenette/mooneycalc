@@ -1,3 +1,5 @@
+import { Bonuses, addBonuses, zeroBonuses } from "./buffs";
+import { ItemDetail, gameData } from "./data";
 import { items } from "./items";
 
 export const TEA_PER_HOUR = 12;
@@ -19,11 +21,9 @@ function chooseUpTo<T>(n: number, arr: T[]): T[][] {
   ];
 }
 
-console.log(chooseUpTo(3, [1, 2, 3]));
-
 // TODO: add wisdom tea
 // TODO: add processing tea
-export const teaLoadoutByActionType: Record<string, string[][]> = {
+const teaCombinationsByActionType: Record<string, string[][]> = {
   "/action_types/milking": chooseUpTo(3, [
     "/items/milking_tea",
     "/items/super_milking_tea",
@@ -76,4 +76,47 @@ export const teaLoadoutByActionType: Record<string, string[][]> = {
   ]),
 };
 
-console.log(teaLoadoutByActionType["/action_types/brewing"]);
+export interface TeaLoadout {
+  teaHrids: string[];
+  bonuses: Bonuses;
+}
+
+export const emptyTeaLoadout: TeaLoadout = {
+  teaHrids: [],
+  bonuses: zeroBonuses,
+};
+
+function getTeaBonuses(actionType: string, teaHrid: string) {
+  const tea = gameData.itemDetailMap[teaHrid]!;
+  const buffEffects = { ...zeroBonuses };
+
+  if (tea.consumableDetail.buffs === undefined) {
+    console.log(`No buffs for tea ${teaHrid}`);
+    return buffEffects;
+  }
+
+  if (tea.consumableDetail.usableInActionTypeMap![actionType] !== true) {
+    console.log(`Tea ${teaHrid} is not usable in action type ${actionType}`);
+    return buffEffects;
+  }
+
+  for (const buff of tea.consumableDetail.buffs!) {
+    buffEffects[buff.typeHrid] += buff.flatBoost;
+  }
+
+  return buffEffects;
+}
+
+export const teaLoadoutsByActionType: Record<string, TeaLoadout[]> = {};
+for (const [actionTypeHrid, teaHrids] of Object.entries(
+  teaCombinationsByActionType,
+)) {
+  teaLoadoutsByActionType[actionTypeHrid] = teaHrids.map((teaHrids) => {
+    return {
+      teaHrids,
+      bonuses: addBonuses(
+        ...teaHrids.map((teaHrid) => getTeaBonuses(actionTypeHrid, teaHrid)),
+      ),
+    };
+  });
+}

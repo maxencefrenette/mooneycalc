@@ -6,3 +6,5 @@ export const actions = Object.values(gameData.actionDetailMap).sort(
     a.sortIndex -
     (1000 * gameData.actionTypeDetailMap[b.type]!.sortIndex + b.sortIndex),
 );
+
+export const actionTypes = Object.keys(gameData.actionTypeDetailMap);

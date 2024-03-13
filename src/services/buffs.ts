@@ -17,12 +17,12 @@ export const BUFF_TYPE_ACTION_LEVEL = "/buff_types/action_level";
 
 export type Bonuses = Record<string, number>;
 
-export function zeroBonuses(): Bonuses {
-  return Object.fromEntries(buffTypes.map((buffType) => [buffType.hrid, 0]));
-}
+export const zeroBonuses: Bonuses = Object.fromEntries(
+  buffTypes.map((buffType) => [buffType.hrid, 0]),
+);
 
 export function addBonuses(...effects: Bonuses[]) {
-  const result: Bonuses = zeroBonuses();
+  const result: Bonuses = { ...zeroBonuses };
   for (const effect of effects) {
     for (const [key, value] of Object.entries(effect)) {
       result[key] += value;

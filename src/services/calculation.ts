@@ -20,7 +20,12 @@ import { houseRooms } from "./house-rooms";
 import { itemName } from "./items";
 import { type Market } from "./market-fetch";
 import { type Settings } from "./settings";
-import { TEA_PER_HOUR, teaLoadoutByActionType } from "./teas";
+import {
+  TEA_PER_HOUR,
+  type TeaLoadout,
+  emptyTeaLoadout,
+  teaLoadoutsByActionType,
+} from "./teas";
 
 export interface ComputedAction {
   id: string;
@@ -51,9 +56,9 @@ function getEquipmentBonuses(
   equipmentHrid: string | null,
   equipmentLevel: number,
 ) {
-  if (equipmentHrid === null) return zeroBonuses();
+  if (equipmentHrid === null) return zeroBonuses;
 
-  const bonuses = zeroBonuses();
+  const bonuses = { ...zeroBonuses };
   const equipment = gameData.itemDetailMap[equipmentHrid]!;
 
   const stats = equipment.equipmentDetail.noncombatStats;
@@ -123,7 +128,7 @@ function getEquipmentBonuses(
 }
 
 function getHouseBonuses(actionType: string, settings: Settings) {
-  const buffEffects = zeroBonuses();
+  const buffEffects = { ...zeroBonuses };
 
   for (const houseRoom of houseRooms) {
     const level = settings.houseRooms[houseRoom.hrid]!;
@@ -141,7 +146,7 @@ function getHouseBonuses(actionType: string, settings: Settings) {
 }
 
 function getCommunityBuffBonuses(actionType: string, settings: Settings) {
-  const buffEffects = zeroBonuses();
+  const buffEffects = { ...zeroBonuses };
 
   for (const buff of communityBuffs) {
     const level = settings.communityBuffs[buff.hrid]!;
@@ -151,27 +156,6 @@ function getCommunityBuffBonuses(actionType: string, settings: Settings) {
 
     buffEffects[buff.buff.typeHrid] +=
       buff.buff.flatBoost + buff.buff.flatBoostLevelBonus * (level - 1);
-  }
-
-  return buffEffects;
-}
-
-function getTeaBonuses(actionType: string, teaHrid: string) {
-  const tea = gameData.itemDetailMap[teaHrid]!;
-  const buffEffects = zeroBonuses();
-
-  if (tea.consumableDetail.buffs === undefined) {
-    console.log(`No buffs for tea ${teaHrid}`);
-    return buffEffects;
-  }
-
-  if (tea.consumableDetail.usableInActionTypeMap![actionType] !== true) {
-    console.log(`Tea ${teaHrid} is not usable in action type ${actionType}`);
-    return buffEffects;
-  }
-
-  for (const buff of tea.consumableDetail.buffs!) {
-    buffEffects[buff.typeHrid] += buff.flatBoost;
   }
 
   return buffEffects;
@@ -229,7 +213,7 @@ function getOutputPrice(itemHrid: string, settings: Settings, market: Market) {
 
 function computeSingleAction(
   action: ActionDetail,
-  teas: string[],
+  teaLoadout: TeaLoadout,
   settings: Settings,
   market: Market,
 ): ComputedAction {
@@ -237,7 +221,7 @@ function computeSingleAction(
   const equipmentBonuses = addBonuses(
     ...Object.entries(settings.equipment).map(
       ([equipmentType, equipmentHrid]) => {
-        if (equipmentHrid === null) return zeroBonuses();
+        if (equipmentHrid === null) return zeroBonuses;
 
         return getEquipmentBonuses(
           action.type,
@@ -250,9 +234,7 @@ function computeSingleAction(
   );
   const houseBonuses = getHouseBonuses(action.type, settings);
   const communityBonuses = getCommunityBuffBonuses(action.type, settings);
-  const teaBonuses = addBonuses(
-    ...teas.map((tea) => getTeaBonuses(action.type, tea)),
-  );
+  const teaBonuses = teaLoadout.bonuses;
   const bonuses = addBonuses(
     equipmentBonuses,
     houseBonuses,
@@ -331,7 +313,7 @@ function computeSingleAction(
   });
   const outputMaxBidAskSpread = Math.max(...outputBidAskSpreads);
 
-  const teasCost = teas.reduce(
+  const teasCost = teaLoadout.teaHrids.reduce(
     (sum, tea) => sum + getInputPrice(tea, settings, market),
     0,
   );
@@ -344,7 +326,7 @@ function computeSingleAction(
     name: action.name,
     skillHrid: action.levelRequirement.skillHrid,
     levelRequired: action.levelRequirement.level,
-    teas: teas,
+    teas: teaLoadout.teaHrids,
     inputs,
     inputsPrice: inputsCost,
     outputs,
@@ -400,13 +382,13 @@ export function computeActions(settings: Settings, market: Market) {
   }
 
   const computedActions = filteredActions.flatMap((a) => {
-    let teaLoadouts = settings.filters.showAutoTeas
-      ? teaLoadoutByActionType[a.type] ?? [[]]
-      : [[]];
+    let teaLoadouts: TeaLoadout[] = settings.filters.showAutoTeas
+      ? teaLoadoutsByActionType[a.type]!
+      : [emptyTeaLoadout];
 
     const drinkSlots = getDrinkSlots(settings);
     teaLoadouts = teaLoadouts.filter((teaLoadout) => {
-      return teaLoadout.length <= drinkSlots;
+      return teaLoadout.teaHrids.length <= drinkSlots;
     });
 
     const candidateActions = teaLoadouts.map((teaLoadout) => {
