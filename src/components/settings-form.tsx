@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { equipmentTypes } from "~/services/equipment-types";
+import { equipmentTypes } from "~/services/equipment";
 import {
   isSkillingEquipment,
   itemName,
