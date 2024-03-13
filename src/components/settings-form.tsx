@@ -90,7 +90,7 @@ export function SettingsForm() {
             <CardTitle>Skilling Equipment</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-flow-row grid-cols-[repeat(auto-fit,minmax(160px,_1fr))] gap-4">
+            <div className="grid grid-flow-row grid-cols-[repeat(auto-fit,minmax(220px,_1fr))] gap-4">
               {equipmentTypes.map(({ hrid, name }) => {
                 const selectedEquipment = settings.equipment[hrid]!;
 
@@ -101,50 +101,69 @@ export function SettingsForm() {
                 return (
                   <div key={hrid} className="grid items-center gap-1.5">
                     <Label htmlFor={hrid}>{name}</Label>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger>
-                        <Input
-                          type="text"
-                          id={hrid}
-                          value={itemName(selectedEquipment) ?? ""}
-                          readOnly
-                          className="cursor-pointer"
-                        />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem
-                          onClick={() =>
-                            updateSettings({
-                              ...settings,
-                              equipment: {
-                                ...settings.equipment,
-                                [hrid]: null,
-                              },
-                            })
-                          }
-                        >
-                          None
-                        </DropdownMenuItem>
-                        {equipmentOptions.map(
-                          ({ hrid: itemHrid, name: itemName }) => (
-                            <DropdownMenuItem
-                              key={itemHrid}
-                              onClick={() =>
-                                updateSettings({
-                                  ...settings,
-                                  equipment: {
-                                    ...settings.equipment,
-                                    [hrid]: itemHrid,
-                                  },
-                                })
-                              }
-                            >
-                              {itemName}
-                            </DropdownMenuItem>
-                          ),
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <div className="flex items-center gap-1">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger className="flex-grow">
+                          <Input
+                            type="text"
+                            id={hrid}
+                            value={itemName(selectedEquipment) ?? ""}
+                            readOnly
+                            className="cursor-pointer"
+                          />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              updateSettings({
+                                ...settings,
+                                equipment: {
+                                  ...settings.equipment,
+                                  [hrid]: null,
+                                },
+                              })
+                            }
+                          >
+                            None
+                          </DropdownMenuItem>
+                          {equipmentOptions.map(
+                            ({ hrid: itemHrid, name: itemName }) => (
+                              <DropdownMenuItem
+                                key={itemHrid}
+                                onClick={() =>
+                                  updateSettings({
+                                    ...settings,
+                                    equipment: {
+                                      ...settings.equipment,
+                                      [hrid]: itemHrid,
+                                    },
+                                  })
+                                }
+                              >
+                                {itemName}
+                              </DropdownMenuItem>
+                            ),
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                      +
+                      <Input
+                        type="number"
+                        className="w-16"
+                        min={0}
+                        max={20}
+                        value={settings.equipmentLevels[hrid]}
+                        onChange={(e) =>
+                          updateSettings({
+                            ...settings,
+                            equipmentLevels: {
+                              ...settings.equipmentLevels,
+                              [hrid]: parseInt(e.target.value, 10),
+                            },
+                          })
+                        }
+                      />
+                    </div>
                   </div>
                 );
               })}

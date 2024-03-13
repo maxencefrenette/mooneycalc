@@ -162,8 +162,9 @@ const CommunityBuffTypeDetailSchema = z.object({
 
 const GameDataSchema = z.object({
   equipmentTypeDetailMap: z.record(EquipmentTypeDetailSchema),
-  itemDetailMap: z.record(ItemDetailSchema),
   skillDetailMap: z.record(SkillDetailSchema),
+  itemDetailMap: z.record(ItemDetailSchema),
+  enhancementLevelTotalBonusMultiplierTable: z.array(z.number()),
   actionDetailMap: z.record(ActionDetailSchema),
   actionTypeDetailMap: z.record(ActionTypeDetailSchema),
   buffTypeDetailMap: z.record(BuffTypeDetailSchema),
