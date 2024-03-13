@@ -137,9 +137,9 @@ function computeSingleAction(
   );
 
   // Compute level efficiency
-  const baseLevel = Math.max(
-    settings.levels[action.levelRequirement.skillHrid]!,
-  );
+  let baseLevel = settings.levels[action.levelRequirement.skillHrid]!;
+  if (baseLevel < action.levelRequirement.level)
+    baseLevel = action.levelRequirement.level;
   const levelBonus = getLevelBonus(action.levelRequirement.skillHrid, bonuses);
   const boostedLevel = baseLevel + levelBonus;
   const actionLevel =
