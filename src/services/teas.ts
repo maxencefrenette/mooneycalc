@@ -7,8 +7,6 @@ export const teas = items
 
 // TODO: add wisdom tea
 // TODO: add processing tea
-// TODO: add gourmet tea
-// TODO: add artisan tea
 export const teaLoadoutByActionType: Record<string, string[][]> = {
   "/action_types/milking": [
     [],
@@ -36,29 +34,39 @@ export const teaLoadoutByActionType: Record<string, string[][]> = {
     ["/items/cheesesmithing_tea"],
     ["/items/super_cheesesmithing_tea"],
     ["/items/efficiency_tea"],
+    ["/items/gourmet_tea"],
+    ["/items/artisan_tea"],
   ],
   "/action_types/crafting": [
     [],
     ["/items/crafting_tea"],
     ["/items/super_crafting_tea"],
     ["/items/efficiency_tea"],
+    ["/items/gourmet_tea"],
+    ["/items/artisan_tea"],
   ],
   "/action_types/tailoring": [
     [],
     ["/items/tailoring_tea"],
     ["/items/super_tailoring_tea"],
     ["/items/efficiency_tea"],
+    ["/items/gourmet_tea"],
+    ["/items/artisan_tea"],
   ],
   "/action_types/cooking": [
     [],
     ["/items/cooking_tea"],
     ["/items/super_cooking_tea"],
     ["/items/efficiency_tea"],
+    ["/items/gourmet_tea"],
+    ["/items/artisan_tea"],
   ],
   "/action_types/brewing": [
     [],
     ["/items/brewing_tea"],
     ["/items/super_brewing_tea"],
     ["/items/efficiency_tea"],
+    ["/items/gourmet_tea"],
+    ["/items/artisan_tea"],
   ],
 };

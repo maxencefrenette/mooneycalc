@@ -10,6 +10,9 @@ import {
   BUFF_TYPE_WISDOM,
   BUFF_TYPE_RARE_FIND,
   type Bonuses,
+  BUFF_TYPE_GOURMET,
+  BUFF_TYPE_ARTISAN,
+  BUFF_TYPE_ACTION_LEVEL,
 } from "./buffs";
 import { communityBuffs } from "./community-buffs";
 import { type ActionDetail, gameData, type ItemCount } from "./data";
@@ -261,10 +264,9 @@ function computeSingleAction(
   const levelBonus = getLevelBonus(action.levelRequirement.skillHrid, bonuses);
   const level =
     settings.levels[action.levelRequirement.skillHrid]! + levelBonus;
-  const levelsAboveRequirement = Math.max(
-    0,
-    level - action.levelRequirement.level,
-  );
+  const actionLevel =
+    action.levelRequirement.level + bonuses[BUFF_TYPE_ACTION_LEVEL]!;
+  const levelsAboveRequirement = Math.max(0, level - actionLevel);
   const levelEfficiency = 0.01 * levelsAboveRequirement;
 
   // Compute actions per hour
@@ -273,14 +275,32 @@ function computeSingleAction(
   const efficiency = 1 + bonuses[BUFF_TYPE_EFFICIENCY]! + levelEfficiency;
   const actionsPerHour = baseActionsPerHour * speed * efficiency;
 
-  // Compute inputs and outputs
-  const inputs = action.inputItems?.slice() ?? [];
+  // Compute inputs
+  let inputs = action.inputItems?.slice() ?? [];
   if (action.upgradeItemHrid) {
     inputs.push({ itemHrid: action.upgradeItemHrid, count: 1 });
   }
 
-  const gatheringBonus = 1 + bonuses[BUFF_TYPE_GATHERING]!;
+  // Apply artisan bonus
+  const artisanBonus = 1 - bonuses[BUFF_TYPE_ARTISAN]!;
+  inputs = inputs.map(({ itemHrid, count }) => ({
+    itemHrid,
+    count: count * artisanBonus,
+  }));
+
+  // Compute outputs
   let outputs = action.outputItems ?? [];
+
+  // Apply gourmet bonus
+  const gourmetBonus = 1 + bonuses[BUFF_TYPE_GOURMET]!;
+  outputs =
+    outputs.map(({ itemHrid, count }) => ({
+      itemHrid,
+      count: count * gourmetBonus,
+    })) ?? [];
+
+  // Apply gathering bonus and add drop table to outputs
+  const gatheringBonus = 1 + bonuses[BUFF_TYPE_GATHERING]!;
   if (action.dropTable) {
     const dropTableOutputs = action.dropTable.map((e) => ({
       itemHrid: e.itemHrid,

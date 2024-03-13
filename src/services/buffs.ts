@@ -10,6 +10,10 @@ export const BUFF_TYPE_GATHERING = "/buff_types/gathering";
 export const BUFF_TYPE_TASK_SPEED = "/buff_types/task_speed";
 export const BUFF_TYPE_RARE_FIND = "/buff_types/rare_find";
 export const BUFF_TYPE_WISDOM = "/buff_types/wisdom";
+export const BUFF_TYPE_PROCESSING = "/buff_types/processing";
+export const BUFF_TYPE_GOURMET = "/buff_types/gourmet";
+export const BUFF_TYPE_ARTISAN = "/buff_types/artisan";
+export const BUFF_TYPE_ACTION_LEVEL = "/buff_types/action_level";
 
 export type Bonuses = Record<string, number>;
 
