@@ -30,3 +30,26 @@ export function addBonuses(...effects: Bonuses[]) {
   }
   return result;
 }
+
+export function getLevelBonus(skillHrid: string, bonuses: Bonuses) {
+  const skillToBonusMap: Record<string, string> = {
+    "/skills/milking": "/buff_types/milking_level",
+    "/skills/foraging": "/buff_types/foraging_level",
+    "/skills/woodcutting": "/buff_types/woodcuttinglevel",
+    "/skills/cheesesmithing": "/buff_types/cheesesmithing_level",
+    "/skills/crafting": "/buff_types/crafting_level",
+    "/skills/tailoring": "/buff_types/tailoring_level",
+    "/skills/cooking": "/buff_types/cooking_level",
+    "/skills/brewing": "/buff_types/brewing_level",
+    "/skills/enhancing": "/buff_types/enhancing_level",
+  };
+
+  const bonusName = skillToBonusMap[skillHrid];
+
+  if (bonusName === undefined) {
+    console.warn(`No level bonus for skill ${skillHrid}`);
+    return 0;
+  }
+
+  return bonuses[bonusName] ?? 0;
+}

@@ -9,6 +9,7 @@ import {
   BUFF_TYPE_GOURMET,
   BUFF_TYPE_ARTISAN,
   BUFF_TYPE_ACTION_LEVEL,
+  getLevelBonus,
 } from "./buffs";
 import { communityBuffs } from "./community-buffs";
 import { type ActionDetail, gameData, type ItemCount } from "./data";
@@ -81,29 +82,6 @@ function getCommunityBuffBonuses(actionType: string, settings: Settings) {
   return buffEffects;
 }
 
-function getLevelBonus(skillHrid: string, bonuses: Bonuses) {
-  const skillToBonusMap: Record<string, string> = {
-    "/skills/milking": "/buff_types/milking_level",
-    "/skills/foraging": "/buff_types/foraging_level",
-    "/skills/woodcutting": "/buff_types/woodcuttinglevel",
-    "/skills/cheesesmithing": "/buff_types/cheesesmithing_level",
-    "/skills/crafting": "/buff_types/crafting_level",
-    "/skills/tailoring": "/buff_types/tailoring_level",
-    "/skills/cooking": "/buff_types/cooking_level",
-    "/skills/brewing": "/buff_types/brewing_level",
-    "/skills/enhancing": "/buff_types/enhancing_level",
-  };
-
-  const bonusName = skillToBonusMap[skillHrid];
-
-  if (bonusName === undefined) {
-    console.warn(`No level bonus for skill ${skillHrid}`);
-    return 0;
-  }
-
-  return bonuses[bonusName] ?? 0;
-}
-
 function getInputPrice(itemHrid: string, settings: Settings, market: Market) {
   if (itemHrid === "/items/coin") return 1;
 
@@ -159,12 +137,14 @@ function computeSingleAction(
   );
 
   // Compute level efficiency
+  const baseLevel = Math.max(
+    settings.levels[action.levelRequirement.skillHrid]!,
+  );
   const levelBonus = getLevelBonus(action.levelRequirement.skillHrid, bonuses);
-  const level =
-    settings.levels[action.levelRequirement.skillHrid]! + levelBonus;
+  const boostedLevel = baseLevel + levelBonus;
   const actionLevel =
     action.levelRequirement.level + bonuses[BUFF_TYPE_ACTION_LEVEL]!;
-  const levelsAboveRequirement = Math.max(0, level - actionLevel);
+  const levelsAboveRequirement = Math.max(0, boostedLevel - actionLevel);
   const levelEfficiency = 0.01 * levelsAboveRequirement;
 
   // Compute actions per hour
