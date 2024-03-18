@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { cn } from "~/lib/utils";
 import { TooltipProvider } from "~/components/ui/tooltip";
 import { Analytics } from "@vercel/analytics/react";
+import { QueryProvider } from "~/components/query-provider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,7 +30,9 @@ export default function RootLayout({
           inter.variable,
         )}
       >
-        <TooltipProvider>{children}</TooltipProvider>
+        <QueryProvider>
+          <TooltipProvider>{children}</TooltipProvider>
+        </QueryProvider>
         <Analytics />
       </body>
     </html>
